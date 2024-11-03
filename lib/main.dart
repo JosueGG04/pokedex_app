@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_app/core/routes/routes.dart';
+import 'package:pokedex_app/core/routes/route_generator.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 void main() {
@@ -14,8 +14,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'PokeDex',
-      routes: routes,
       initialRoute: '/',
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
