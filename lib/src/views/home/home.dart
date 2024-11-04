@@ -48,7 +48,6 @@ class Home extends StatelessWidget {
               itemCount: pokemons.length,
               itemBuilder: (context, index) {
                 final pokemon = pokemons[index];
-                print(pokemon['pokemon_v2_pokemontypes'].length);
                 final spriteUrl = pokemon['pokemon_v2_pokemonsprites'][0]['sprites'];
 
                 return ListTile(
