@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';  
-import 'package:pokedex_app/core/entities/pokemon_list_entity.dart'; 
+import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
+import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart'; 
 
 class PokemonListScreen extends StatefulWidget {
   final PokemonListRepository repository;
@@ -72,13 +73,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                 : SizedBox.shrink();
           }
           final pokemon = _pokemonList[index];
-          return ListTile(
-            leading: pokemon.spriteUrl != null
-                ? Image.network(pokemon.spriteUrl)
-                : Icon(Icons.image_not_supported),
-            title: Text(pokemon.name),
-            subtitle: Text('Tipo(s): ${pokemon.type.join(', ')}'),
-          );
+          return PokemonListTile(pokemon: pokemon);
         },
       ),
     );
