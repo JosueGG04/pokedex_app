@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';  
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
 import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart'; 
@@ -14,7 +13,7 @@ class PokemonListScreen extends StatefulWidget {
 }
 
 class _PokemonListScreenState extends State<PokemonListScreen> {
-  List<PokemonListEntity> _pokemonList = [];
+  final List<PokemonListEntity> _pokemonList = [];
   bool _isLoadingMore = false;
   bool _isFirstLoad = true; 
   int _offset = 0;
