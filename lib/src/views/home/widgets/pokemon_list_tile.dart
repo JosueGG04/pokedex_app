@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
+import 'package:pokedex_app/core/utils/type_colors.dart';
 
-const double pokemonImgSize = 75, typeIconSize = 20;
+const double pokemonImgSize = 100, typeIconSize = 22;
 class PokemonListTile extends StatelessWidget {
   final PokemonListEntity pokemon;
 
@@ -10,40 +11,74 @@ class PokemonListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(6.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(23), 
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
+    return InkWell(
+      onTap: () {
+        //
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15), 
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: pokemon.type.length > 1 ? [lightTypeColors[pokemon.type[0]]!, lightTypeColors[pokemon.type[1]]!] : [lightTypeColors[pokemon.type[0]]!, typeColors[pokemon.type[0]]!],
             ),
-          ],
-        ),
-        child: ListTile(
-          leading: Image.network(pokemon.spriteUrl, width: pokemonImgSize, height: pokemonImgSize),
-          title: Text(
-            pokemon.name, 
-            style: const TextStyle(fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold)
           ),
-          subtitle: Row(
-            children: pokemon.type.map((type) => 
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0,4,5,0),
-                child: SvgPicture.asset(
-                  'assets/icons/$type.svg',
-                  height: typeIconSize,
-                  width: typeIconSize,
+          height: 100,
+          child: Card(
+            shadowColor: Colors.transparent,
+            color: Colors.transparent,
+            child: Row(
+              children: [
+                Image.network(pokemon.spriteUrl,fit: BoxFit.fitHeight, width: pokemonImgSize, height: pokemonImgSize),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        pokemon.name, 
+                        style: const TextStyle(fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold,),
+                      ),
+                    ),
+                    Row(
+                      children: pokemon.type.map((type) => 
+                        Padding(
+                          padding: const EdgeInsets.only(right: 5, bottom: 20),
+                          child: SvgPicture.asset(
+                            'assets/icons/$type.svg',
+                            height: typeIconSize,
+                            width: typeIconSize,
+                          ),
+                        )
+                      ).toList(),
+                    )
+                  ],
                 ),
-              )
-            ).toList(),
-          ),
-          trailing: Text("#${pokemon.id.toString().padLeft(3, '0')}", style: const TextStyle(fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Text("#${pokemon.id.toString().padLeft(3, '0')}", style: const TextStyle(color: Colors.black ,fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold)),
+                    )
+                  ),
+                ),
+              ],
+            ),
+          )
         ),
       ),
     );
