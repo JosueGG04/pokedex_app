@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pokedex_app/core/entities/pokemon_stats_entity.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_info_tab.dart';
+import 'package:pokedex_app/src/views/Details/widgets/pokemon_moves_tab.dart';
+import 'package:pokedex_app/src/views/Details/widgets/pokemon_stats_tab.dart';
 import '../../../../core/entities/pokemon_info_entity.dart';
 import '../../../../core/entities/pokemon_list_entity.dart';
+import '../../../../core/entities/pokemon_moves_entity.dart';
 import '../../../../core/repositories/pokemon_details_repository.dart';
 
 class PokemonInfoScreen extends StatefulWidget {
@@ -20,12 +24,29 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
     with SingleTickerProviderStateMixin {
   late PokemonInfoEntity _pokemonInfo;
   late TabController _tabController;
+  late PokemonStatsEntity _pokemonStats;
+  late List<PokemonMovesEntity> _pokemonMoves;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _pokemonInfo = PokemonInfoEntity(id: widget.pokemon.id, genus: '', description: '', height: 0, weight: 0, name: '', ability: []);
+    _pokemonInfo = PokemonInfoEntity(
+        id: widget.pokemon.id,
+        genus: '',
+        description: '',
+        height: 0,
+        weight: 0,
+        name: '',
+        ability: []);
+    _pokemonStats = PokemonStatsEntity(
+        hp: 0,
+        attack: 0,
+        defense: 0,
+        specialAttack: 0,
+        specialDefense: 0,
+        speed: 0);
+    _pokemonMoves = [];
   }
 
   @override
@@ -46,10 +67,36 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
     }
   }
 
+  Future<void> _fetchPokemonStats() async {
+    try {
+      final pokemonStats =
+          await widget.repository.getPokemonStats(context, widget.pokemon.id);
+      setState(() {
+        _pokemonStats = pokemonStats;
+      });
+    } catch (e) {
+      print('Error al cargar estadísticas del Pokémon: $e');
+    }
+  }
+
+  Future<void> _fetchPokemonMoves() async {
+    try {
+      final pokemonMoves =
+          await widget.repository.getPokemonMoves(context, widget.pokemon.id);
+      setState(() {
+        _pokemonMoves = pokemonMoves;
+      });
+    } catch (e) {
+      print('Error al cargar movimientos del Pokémon: $e');
+    }
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _fetchPokemonInfo();
+    _fetchPokemonStats();
+    _fetchPokemonMoves();
   }
 
   @override
@@ -61,17 +108,6 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
       body: Stack(
         alignment: Alignment.center,
         children: [
-          Positioned(
-            top: 30,
-            left: 5,
-            child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: 25,
-                ),
-                onPressed: () => Navigator.pop(context)),
-          ),
           Positioned(
             top: -30,
             left: -50,
@@ -144,9 +180,11 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                       child: TabBarView(
                         controller: _tabController,
                         children: [
-                          PokemonInfoTab(pokemonInfo: _pokemonInfo, pokemon: widget.pokemon),
-                          const Center(child: Text('Stats of the Pokémon')),
-                          const Center(child: Text('Moves of the Pokémon')),
+                          PokemonInfoTab(
+                              pokemonInfo: _pokemonInfo,
+                              pokemon: widget.pokemon),
+                          PokemonStatsTab(pokemonStats: _pokemonStats),
+                          PokemonMovesTab(pokemonMoves: _pokemonMoves),
                         ],
                       ),
                     ),
@@ -157,16 +195,27 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
           ),
           Positioned(
             top: (height * 0.07),
-            left: (width / 2) - 100,
+            left: (width / 2) - 80,
             child: widget.pokemon.spriteUrl != null
                 ? Image.network(
                     widget.pokemon.spriteUrl,
-                    height: 275,
+                    height: height * 0.30,
                     fit: BoxFit.fitHeight,
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.error),
                   )
                 : const Icon(Icons.image_not_supported),
+          ),
+          Positioned(
+            top: 30,
+            left: 5,
+            child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                  size: 25,
+                ),
+                onPressed: () => Navigator.pop(context)),
           )
         ],
       ),
