@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../entities/pokemon_info_entity.dart';
+import '../entities/pokemon_moves_entity.dart';
+import '../entities/pokemon_stats_entity.dart';
 
 class PokemonDetailsRepository {
   String getPokemonInfoQuery = """
@@ -49,11 +51,16 @@ class PokemonDetailsRepository {
     return PokemonInfoEntity(
       id: id,
       name: pokemon['name'],
-      genus: pokemon['pokemon_v2_pokemonspecy']['pokemon_v2_pokemonspeciesnames'][0]['genus'],
-      description: pokemon['pokemon_v2_pokemonspecy']['pokemon_v2_pokemonspeciesflavortexts'][0]['flavor_text'],
+      genus: pokemon['pokemon_v2_pokemonspecy']
+          ['pokemon_v2_pokemonspeciesnames'][0]['genus'],
+      description: pokemon['pokemon_v2_pokemonspecy']
+          ['pokemon_v2_pokemonspeciesflavortexts'][0]['flavor_text'],
       height: pokemon['height'].toDouble(),
       weight: pokemon['weight'].toDouble(),
-      ability: pokemon['pokemon_v2_pokemonabilities'].map((ability) => ability['pokemon_v2_ability']['pokemon_v2_abilitynames'][0]['name']).toList(),
+      ability: pokemon['pokemon_v2_pokemonabilities']
+          .map((ability) => ability['pokemon_v2_ability']
+              ['pokemon_v2_abilitynames'][0]['name'])
+          .toList(),
     );
   }
 
@@ -72,7 +79,8 @@ class PokemonDetailsRepository {
 }
   """;
 
-  Future<List<Map<String, dynamic>>> getPokemonStats(BuildContext context, int id) async {
+  Future<PokemonStatsEntity> getPokemonStats(
+      BuildContext context, int id) async {
     final client = GraphQLProvider.of(context).value;
 
     final QueryResult result = await client.query(QueryOptions(
@@ -85,10 +93,65 @@ class PokemonDetailsRepository {
     }
 
     final pokemon = result.data!['pokemon_v2_pokemon'][0];
+    final stats = pokemon['pokemon_v2_pokemonstats'];
 
-    return pokemon['pokemon_v2_pokemonstats'].map<Map<String, dynamic>>((stat) => {
-      'name': stat['pokemon_v2_stat']['name'],
-      'value': stat['base_stat'],
-    }).toList();
+    return PokemonStatsEntity(
+      hp: stats.firstWhere(
+          (stat) => stat['pokemon_v2_stat']['name'] == 'hp')['base_stat'],
+      attack: stats.firstWhere(
+          (stat) => stat['pokemon_v2_stat']['name'] == 'attack')['base_stat'],
+      defense: stats.firstWhere(
+          (stat) => stat['pokemon_v2_stat']['name'] == 'defense')['base_stat'],
+      specialAttack: stats.firstWhere((stat) =>
+          stat['pokemon_v2_stat']['name'] == 'special-attack')['base_stat'],
+      specialDefense: stats.firstWhere((stat) =>
+          stat['pokemon_v2_stat']['name'] == 'special-defense')['base_stat'],
+      speed: stats.firstWhere(
+          (stat) => stat['pokemon_v2_stat']['name'] == 'speed')['base_stat'],
+    );
   }
+
+  String getPokemonMovesQuery = """
+  query getPokemonMoves(\$id: Int!) {
+  pokemon_v2_pokemon(where: {id: {_eq: \$id}}) {
+    name
+    pokemon_v2_pokemonmoves(order_by: {pokemon_v2_versiongroup: {order: desc}, move_id: asc, level: asc}, where: {pokemon_v2_movelearnmethod: {id: {_eq: 1}}}, distinct_on: [move_id, level]) {
+      level
+      pokemon_v2_move {
+        name
+        power
+        accuracy
+        pp
+        pokemon_v2_type {
+          name
+        }
+      }
+    }
+  }
+}
+  """;
+
+  Future<List<PokemonMovesEntity>> getPokemonMoves(BuildContext context, int id) async {
+    final client = GraphQLProvider.of(context).value;
+
+    final QueryResult result = await client.query(QueryOptions(
+      document: gql(getPokemonMovesQuery),
+      variables: {'id': id},
+    ));
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+    final pokemon = result.data!['pokemon_v2_pokemon'][0];
+    final moves = pokemon['pokemon_v2_pokemonmoves'];
+
+    return moves.map((move) => PokemonMovesEntity(
+      name: move['pokemon_v2_move']['name'],
+      accuracy: move['pokemon_v2_move']['accuracy'].toDouble(),
+      pp: move['pokemon_v2_move']['pp'],
+      power: move['pokemon_v2_move']['power'],
+      level: move['level'],
+    )).toList();
+  }
+
 }
