@@ -59,6 +59,7 @@ class _PokemonStatsTabState extends State<PokemonStatsTab> with SingleTickerProv
                       width: width / 0.5,
                       child: Column(
                         children: [
+                          const SizedBox(height: 15),
                           TabBar(
                             labelColor: typeColors[widget.pokemon.type[0]]!,
                             indicatorColor: typeColors[widget.pokemon.type[0]]!,
