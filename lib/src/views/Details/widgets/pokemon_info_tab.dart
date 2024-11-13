@@ -56,7 +56,8 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                           const SizedBox(height: 8),
                           Text(
                             widget.pokemonInfo.description,
-                            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey[700]),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
@@ -64,24 +65,25 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: widget.pokemon.type
                                 .map((type) => Padding(
-                              padding:
-                              const EdgeInsets.fromLTRB(0, 4, 5, 0),
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/$type.svg',
-                                    height: 20,
-                                    width: 20,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    type,
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 15),
-                                  ),
-                                ],
-                              ),
-                            ))
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 4, 5, 0),
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/icons/$type.svg',
+                                            height: 20,
+                                            width: 20,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            type,
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                    ))
                                 .toList(),
                           ),
                           const SizedBox(height: 16),
@@ -90,11 +92,11 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                             children: [
                               Column(
                                 children: [
-                                  const Icon(Icons.straighten,
-                                      color: Colors.blue, size: 24),
+                                  Icon(Icons.straighten,
+                                      color: Colors.grey[700], size: 24),
                                   const Text("Height",
-                                      style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
                                   Text(
                                       "${(widget.pokemonInfo.height / 100).toStringAsFixed(1)} m"),
                                 ],
@@ -102,11 +104,11 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                               const SizedBox(width: 16),
                               Column(
                                 children: [
-                                  const Icon(Icons.fitness_center,
-                                      color: Colors.brown, size: 24),
+                                  Icon(Icons.fitness_center,
+                                      color: Colors.grey[700], size: 24),
                                   const Text("Weight",
-                                      style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
                                   Text(
                                       "${(widget.pokemonInfo.weight / 100).toStringAsFixed(1)} kg"),
                                 ],
@@ -123,10 +125,12 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                     right: 0,
                     child: Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: typeColors[widget.pokemon.type[0]]!),
+                          border: Border.all(
+                              color: typeColors[widget.pokemon.type[0]]!),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -161,26 +165,48 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                       child: Column(
                         children: [
                           const SizedBox(height: 20),
+                          Text(
+                            "The Pokémon's Ability will be one of its non-hidden abilities. Hiddem abilities were introduced in Generation V and are relatively rare and usually require some type of special encounter.",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[700]),
+                          ),
+                          const SizedBox(height: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: widget.pokemonInfo.abilities.map((ability) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    ability.name,
-                                    style: const TextStyle(
-                                        fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    ability.description,
-                                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                                  ),
-                                ],
-                              ),
-                            )).toList(),
+                            children: widget.pokemonInfo.abilities
+                                .map((ability) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: width / 0.5,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 4.0, horizontal: 8.0),
+                                            color: lightTypeColors[
+                                                widget.pokemon.type[0]],
+                                            child: Text(
+                                              ability.name,
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            ability.description,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey[700]),
+                                          ),
+                                        ],
+                                      ),
+                                    ))
+                                .toList(),
                           ),
                         ],
                       ),
@@ -192,10 +218,12 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                     right: 0,
                     child: Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: typeColors[widget.pokemon.type[0]]!),
+                          border: Border.all(
+                              color: typeColors[widget.pokemon.type[0]]!),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
