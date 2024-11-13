@@ -8,6 +8,7 @@ import '../../../../core/entities/pokemon_info_entity.dart';
 import '../../../../core/entities/pokemon_list_entity.dart';
 import '../../../../core/entities/pokemon_moves_entity.dart';
 import '../../../../core/repositories/pokemon_details_repository.dart';
+import '../../../../core/utils/type_colors.dart';
 
 class PokemonInfoScreen extends StatefulWidget {
   final PokemonListEntity pokemon;
@@ -104,7 +105,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: lightTypeColors[widget.pokemon.type[0]],
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -132,6 +133,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
               Text(
                 widget.pokemon.name,
                 style: const TextStyle(
+                    fontFamily: 'Google',
                     fontSize: 32,
                     color: Colors.white,
                     fontWeight: FontWeight.bold),
@@ -183,8 +185,8 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                           PokemonInfoTab(
                               pokemonInfo: _pokemonInfo,
                               pokemon: widget.pokemon),
-                          PokemonStatsTab(pokemonStats: _pokemonStats),
-                          PokemonMovesTab(pokemonMoves: _pokemonMoves),
+                          PokemonStatsTab(pokemonStats: _pokemonStats, pokemon: widget.pokemon),
+                          PokemonMovesTab(pokemonMoves: _pokemonMoves, pokemon: widget.pokemon),
                         ],
                       ),
                     ),

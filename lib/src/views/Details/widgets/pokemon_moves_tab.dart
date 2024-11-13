@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_app/core/entities/pokemon_stats_entity.dart';
 
+import '../../../../core/entities/pokemon_list_entity.dart';
 import '../../../../core/entities/pokemon_moves_entity.dart';
+import '../../../../core/utils/type_colors.dart';
 
 class PokemonMovesTab extends StatefulWidget {
   final List<PokemonMovesEntity> pokemonMoves;
+  final PokemonListEntity pokemon;
 
-  const PokemonMovesTab({super.key, required this.pokemonMoves});
+  const PokemonMovesTab({super.key, required this.pokemonMoves, required this.pokemon});
 
   @override
   State<PokemonMovesTab> createState() => _PokemonMovesTabState();
@@ -161,7 +164,7 @@ class _PokemonMovesTabState extends State<PokemonMovesTab> {
                             vertical: 8.0, horizontal: 16.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: Colors.green[700]!),
+                          border: Border.all(color: typeColors[widget.pokemon.type[0]]!),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -169,7 +172,7 @@ class _PokemonMovesTabState extends State<PokemonMovesTab> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green[700],
+                            color: typeColors[widget.pokemon.type[0]],
                           ),
                         ),
                       ),
