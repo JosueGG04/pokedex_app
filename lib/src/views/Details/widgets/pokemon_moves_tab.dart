@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:pokedex_app/core/entities/pokemon_stats_entity.dart';
 
 import '../../../../core/entities/pokemon_list_entity.dart';
@@ -9,7 +10,8 @@ class PokemonMovesTab extends StatefulWidget {
   final List<PokemonMovesEntity> pokemonMoves;
   final PokemonListEntity pokemon;
 
-  const PokemonMovesTab({super.key, required this.pokemonMoves, required this.pokemon});
+  const PokemonMovesTab(
+      {super.key, required this.pokemonMoves, required this.pokemon});
 
   @override
   State<PokemonMovesTab> createState() => _PokemonMovesTabState();
@@ -45,9 +47,11 @@ class _PokemonMovesTabState extends State<PokemonMovesTab> {
                       width: width / 0.5,
                       child: Column(
                         children: [
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 20),
                           Table(
-                            border: TableBorder.all(color: Colors.black),
+                            border: const TableBorder(
+                              horizontalInside: BorderSide(color: Colors.black),
+                            ),
                             columnWidths: const {
                               0: FlexColumnWidth(2),
                               1: FlexColumnWidth(1),
@@ -56,11 +60,8 @@ class _PokemonMovesTabState extends State<PokemonMovesTab> {
                               4: FlexColumnWidth(1),
                             },
                             children: [
-                              TableRow(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                ),
-                                children: const [
+                              const TableRow(
+                                children: [
                                   Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
@@ -113,9 +114,29 @@ class _PokemonMovesTabState extends State<PokemonMovesTab> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        move.name,
-                                        style: const TextStyle(fontSize: 14),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            move.name,
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                          Row(
+                                            children: move.type.map((type) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 4.0),
+                                                child: SvgPicture.asset(
+                                                  'assets/icons/$type.svg',
+                                                  height: 15,
+                                                  width: 15,
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     Padding(
@@ -164,7 +185,8 @@ class _PokemonMovesTabState extends State<PokemonMovesTab> {
                             vertical: 8.0, horizontal: 16.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: typeColors[widget.pokemon.type[0]]!),
+                          border: Border.all(
+                              color: typeColors[widget.pokemon.type[0]]!),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(

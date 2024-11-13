@@ -5,6 +5,7 @@ class PokemonMovesEntity {
   int pp;
   int? power;
   int level;
+  List<dynamic> type;
 
   PokemonMovesEntity({
     required this.name,
@@ -12,5 +13,6 @@ class PokemonMovesEntity {
     required this.pp,
     required this.power,
     required this.level,
+    required this.type,
   });
 }
