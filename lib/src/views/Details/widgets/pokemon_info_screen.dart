@@ -199,13 +199,16 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
             top: (height * 0.07),
             left: (width / 2) - 70,
             child: widget.pokemon.spriteUrl != null
-                ? Image.network(
-                    widget.pokemon.spriteUrl,
-                    height: height * 0.30,
-                    fit: BoxFit.fitHeight,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error),
-                  )
+                ? Hero(
+                    tag: widget.pokemon.id,
+                    child: Image.network(
+                        widget.pokemon.spriteUrl,
+                        height: height * 0.30,
+                        fit: BoxFit.fitHeight,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.error),
+                      ),
+                )
                 : const Icon(Icons.image_not_supported),
           ),
           Positioned(
