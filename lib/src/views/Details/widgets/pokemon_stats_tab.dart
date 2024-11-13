@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_app/core/entities/pokemon_stats_entity.dart';
+import 'package:pokedex_app/src/views/Details/widgets/stats_graph.dart';
 
 import '../../../../core/entities/pokemon_list_entity.dart';
 import '../../../../core/utils/type_colors.dart';
@@ -14,7 +15,21 @@ class PokemonStatsTab extends StatefulWidget {
   State<PokemonStatsTab> createState() => _PokemonStatsTabState();
 }
 
-class _PokemonStatsTabState extends State<PokemonStatsTab> {
+class _PokemonStatsTabState extends State<PokemonStatsTab> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+   @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -44,41 +59,37 @@ class _PokemonStatsTabState extends State<PokemonStatsTab> {
                       width: width / 0.5,
                       child: Column(
                         children: [
-                          const SizedBox(height: 30),
-                          Text(
-                            "HP: ${widget.pokemonStats.hp}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                          TabBar(
+                            labelColor: typeColors[widget.pokemon.type[0]]!,
+                            indicatorColor: typeColors[widget.pokemon.type[0]]!,
+                            controller: _tabController,
+                            tabs: const [
+                              Tab(text: 'Base'),
+                              Tab(text: 'Min'),
+                              Tab(text: 'Max'),
+                            ],
                           ),
-                          Text(
-                            "Attack: ${widget.pokemonStats.attack}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            "Defense: ${widget.pokemonStats.defense}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            "Special Attack: ${widget.pokemonStats.specialAttack}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            "Special Defense: ${widget.pokemonStats.specialDefense}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            "Speed: ${widget.pokemonStats.speed}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            "Total: ${widget.pokemonStats.hp + widget.pokemonStats.attack + widget.pokemonStats.defense + widget.pokemonStats.specialAttack + widget.pokemonStats.specialDefense + widget.pokemonStats.speed}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                          SizedBox(
+                            height: 180,
+                            child: TabBarView(
+                              controller: _tabController,
+                              children: [
+                                StatsGraph(
+                                  stats: widget.pokemonStats,
+                                  typeColor: typeColors[widget.pokemon.type[0]]!,
+                                ),
+                                StatsGraph(
+                                  stats: widget.pokemonStats,
+                                  typeColor: typeColors[widget.pokemon.type[0]]!,
+                                  min: true,
+                                ),
+                                StatsGraph(
+                                  stats: widget.pokemonStats,
+                                  typeColor: typeColors[widget.pokemon.type[0]]!,
+                                  max: true,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

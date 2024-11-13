@@ -33,7 +33,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _pokemonInfo = PokemonInfoEntity(
-        id: widget.pokemon.id,
+        id: widget.pokemon.pokedexNumber,
         genus: '',
         description: '',
         height: 0,
