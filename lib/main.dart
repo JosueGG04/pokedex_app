@@ -24,7 +24,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GraphQLProvider(
       client: ValueNotifier(client), // Provee el cliente GraphQL
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'PokeDex',
         initialRoute: '/',

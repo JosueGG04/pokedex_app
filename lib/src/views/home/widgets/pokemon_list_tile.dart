@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
 import 'package:pokedex_app/core/utils/type_colors.dart';
+import '../../../../core/repositories/pokemon_details_repository.dart';
+import '../../Details/widgets/pokemon_info_screen.dart';
 
 const double pokemonImgSize = 100, typeIconSize = 22;
 class PokemonListTile extends StatelessWidget {
@@ -13,7 +15,12 @@ class PokemonListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        //
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PokemonInfoScreen(pokemon: pokemon, repository: PokemonDetailsRepository()),
+          ),
+        );
       },
       child: Padding(
         padding: const EdgeInsets.all(6.0),
