@@ -122,6 +122,84 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
             ),
           ),
           Positioned(
+            bottom: 0,
+            child: Container(
+              width: width,
+              height: height * 0.65,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Column(
+                  children: [
+                    TabBar(
+                      controller: _tabController,
+                      labelStyle: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: typeColors[widget.pokemon.type[0]],
+                      tabs: const [
+                        Tab(text: 'Info'),
+                        Tab(text: 'Stats'),
+                        Tab(text: 'Moves'),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          PokemonInfoTab(
+                              pokemonInfo: _pokemonInfo,
+                              pokemon: widget.pokemon),
+                          PokemonStatsTab(
+                              pokemonStats: _pokemonStats,
+                              pokemon: widget.pokemon),
+                          PokemonMovesTab(
+                              pokemonMoves: _pokemonMoves,
+                              pokemon: widget.pokemon),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 30,
+            left: 5,
+            child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                  size: 25,
+                ),
+                onPressed: () => Navigator.pop(context)),
+          ),
+          Positioned(
+            top: (height * 0.07),
+            left: (width / 2) - 70,
+            child: widget.pokemon.spriteUrl != null
+                ? Hero(
+                    tag: widget.pokemon.id,
+                    child: Image.network(
+                        widget.pokemon.spriteUrl,
+                        height: height * 0.30,
+                        fit: BoxFit.fitHeight,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.error),
+                      ),
+                )
+                : const Icon(Icons.image_not_supported),
+          ),
+          Positioned(
             top: 80,
             left: 20,
             child:
@@ -153,75 +231,6 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
               ),
             ]),
           ),
-          Positioned(
-            bottom: 0,
-            child: Container(
-              width: width,
-              height: height * 0.65,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                color: Colors.white,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Column(
-                  children: [
-                    TabBar(
-                      controller: _tabController,
-                      labelStyle: const TextStyle(fontSize: 18),
-                      tabs: const [
-                        Tab(text: 'Info'),
-                        Tab(text: 'Stats'),
-                        Tab(text: 'Moves'),
-                      ],
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          PokemonInfoTab(
-                              pokemonInfo: _pokemonInfo,
-                              pokemon: widget.pokemon),
-                          PokemonStatsTab(pokemonStats: _pokemonStats, pokemon: widget.pokemon),
-                          PokemonMovesTab(pokemonMoves: _pokemonMoves, pokemon: widget.pokemon),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: (height * 0.07),
-            left: (width / 2) - 70,
-            child: widget.pokemon.spriteUrl != null
-                ? Hero(
-                    tag: widget.pokemon.id,
-                    child: Image.network(
-                        widget.pokemon.spriteUrl,
-                        height: height * 0.30,
-                        fit: BoxFit.fitHeight,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.error),
-                      ),
-                )
-                : const Icon(Icons.image_not_supported),
-          ),
-          Positioned(
-            top: 30,
-            left: 5,
-            child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: 25,
-                ),
-                onPressed: () => Navigator.pop(context)),
-          )
         ],
       ),
     );

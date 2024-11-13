@@ -159,6 +159,7 @@ class PokemonDetailsRepository {
               pp: move['pokemon_v2_move']['pp'],
               power: move['pokemon_v2_move']['power'],
               level: move['level'],
+              type: [move['pokemon_v2_move']['pokemon_v2_type']['name']],
             ))
         .toList();
   }
