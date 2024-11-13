@@ -98,7 +98,7 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),
                                   Text(
-                                      "${(widget.pokemonInfo.height / 100).toStringAsFixed(1)} m"),
+                                      "${(widget.pokemonInfo.height / 10).toStringAsFixed(1)} m"),
                                 ],
                               ),
                               const SizedBox(width: 16),
@@ -110,7 +110,7 @@ class _PokemonInfoTabState extends State<PokemonInfoTab> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),
                                   Text(
-                                      "${(widget.pokemonInfo.weight / 100).toStringAsFixed(1)} kg"),
+                                      "${(widget.pokemonInfo.weight / 10).toStringAsFixed(1)} kg"),
                                 ],
                               ),
                             ],

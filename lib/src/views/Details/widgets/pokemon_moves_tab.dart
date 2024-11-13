@@ -149,14 +149,14 @@ class _PokemonMovesTabState extends State<PokemonMovesTab> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        move.power?.toString() ?? 'N/A',
+                                        move.power?.toString() ?? ' -',
                                         style: const TextStyle(fontSize: 14),
                                       ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        move.accuracy?.toString() ?? 'N/A',
+                                        move.accuracy?.toString() ?? '  -',
                                         style: const TextStyle(fontSize: 14),
                                       ),
                                     ),

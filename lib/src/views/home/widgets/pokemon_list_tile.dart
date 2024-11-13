@@ -60,7 +60,7 @@ class PokemonListTile extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Text(
                         pokemon.name, 
-                        style: const TextStyle(fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold,),
+                        style: const TextStyle(fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                     Row(
@@ -82,7 +82,7 @@ class PokemonListTile extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: Text("#${pokemon.pokedexNumber.toString().padLeft(3, '0')}", style: const TextStyle(color: Colors.black ,fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold)),
+                      child: Text("#${pokemon.pokedexNumber.toString().padLeft(3, '0')}", style: const TextStyle(color: Colors.white, fontFamily: 'Google', fontSize: 20, fontWeight: FontWeight.bold)),
                     )
                   ),
                 ),
