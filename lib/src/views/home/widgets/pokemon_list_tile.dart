@@ -48,7 +48,10 @@ class PokemonListTile extends StatelessWidget {
             color: Colors.transparent,
             child: Row(
               children: [
-                Image.network(pokemon.spriteUrl,fit: BoxFit.fitHeight, width: pokemonImgSize, height: pokemonImgSize),
+                Hero(
+                  tag: pokemon.id,
+                  child: Image.network(pokemon.spriteUrl,fit: BoxFit.fitHeight, width: pokemonImgSize, height: pokemonImgSize)
+                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
