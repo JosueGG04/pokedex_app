@@ -195,7 +195,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
           ),
           Positioned(
             top: (height * 0.07),
-            left: (width / 2) - 80,
+            left: (width / 2) - 70,
             child: widget.pokemon.spriteUrl != null
                 ? Image.network(
                     widget.pokemon.spriteUrl,
