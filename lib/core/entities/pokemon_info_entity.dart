@@ -1,4 +1,6 @@
 
+import 'package:pokedex_app/core/entities/pokemon_abilities_entity.dart';
+
 class PokemonInfoEntity {
   int id;
   String name;
@@ -6,7 +8,7 @@ class PokemonInfoEntity {
   String description;
   double height;
   double weight;
-  List<dynamic> ability;
+  List<Ability> abilities;
 
   PokemonInfoEntity({
     required this.id,
@@ -15,7 +17,7 @@ class PokemonInfoEntity {
     required this.description,
     required this.height,
     required this.weight,
-    required this.ability,
+    required this.abilities,
   });
 
 }

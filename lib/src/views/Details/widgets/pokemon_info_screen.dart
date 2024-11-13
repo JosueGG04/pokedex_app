@@ -38,7 +38,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
         height: 0,
         weight: 0,
         name: '',
-        ability: []);
+        abilities: []);
     _pokemonStats = PokemonStatsEntity(
         hp: 0,
         attack: 0,

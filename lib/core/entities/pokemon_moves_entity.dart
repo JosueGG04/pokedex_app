@@ -1,9 +1,9 @@
 
 class PokemonMovesEntity {
   String name;
-  double accuracy;
+  double? accuracy;
   int pp;
-  int power;
+  int? power;
   int level;
 
   PokemonMovesEntity({

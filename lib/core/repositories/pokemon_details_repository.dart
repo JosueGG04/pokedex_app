@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import '../entities/pokemon_abilities_entity.dart';
 import '../entities/pokemon_info_entity.dart';
 import '../entities/pokemon_moves_entity.dart';
 import '../entities/pokemon_stats_entity.dart';
@@ -57,9 +58,14 @@ class PokemonDetailsRepository {
           ['pokemon_v2_pokemonspeciesflavortexts'][0]['flavor_text'],
       height: pokemon['height'].toDouble(),
       weight: pokemon['weight'].toDouble(),
-      ability: pokemon['pokemon_v2_pokemonabilities']
-          .map((ability) => ability['pokemon_v2_ability']
-              ['pokemon_v2_abilitynames'][0]['name'])
+      abilities: pokemon['pokemon_v2_pokemonabilities']
+          .map<Ability>((ability) => Ability(
+              name: ability['pokemon_v2_ability']['pokemon_v2_abilitynames'][0]
+                      ['name']
+                  .toString(),
+              description: ability['pokemon_v2_ability']
+                      ['pokemon_v2_abilityflavortexts'][0]['flavor_text']
+                  .toString()))
           .toList(),
     );
   }
@@ -131,7 +137,8 @@ class PokemonDetailsRepository {
 }
   """;
 
-  Future<List<PokemonMovesEntity>> getPokemonMoves(BuildContext context, int id) async {
+  Future<List<PokemonMovesEntity>> getPokemonMoves(
+      BuildContext context, int id) async {
     final client = GraphQLProvider.of(context).value;
 
     final QueryResult result = await client.query(QueryOptions(
@@ -145,13 +152,14 @@ class PokemonDetailsRepository {
     final pokemon = result.data!['pokemon_v2_pokemon'][0];
     final moves = pokemon['pokemon_v2_pokemonmoves'];
 
-    return moves.map((move) => PokemonMovesEntity(
-      name: move['pokemon_v2_move']['name'],
-      accuracy: move['pokemon_v2_move']['accuracy'].toDouble(),
-      pp: move['pokemon_v2_move']['pp'],
-      power: move['pokemon_v2_move']['power'],
-      level: move['level'],
-    )).toList();
+    return moves
+        .map<PokemonMovesEntity>((move) => PokemonMovesEntity(
+              name: move['pokemon_v2_move']['name'],
+              accuracy: move['pokemon_v2_move']['accuracy']?.toDouble(),
+              pp: move['pokemon_v2_move']['pp'],
+              power: move['pokemon_v2_move']['power'],
+              level: move['level'],
+            ))
+        .toList();
   }
-
 }
