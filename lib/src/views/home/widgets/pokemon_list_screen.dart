@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';  
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
 import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart'; 
@@ -14,11 +13,14 @@ class PokemonListScreen extends StatefulWidget {
 }
 
 class _PokemonListScreenState extends State<PokemonListScreen> {
-  List<PokemonListEntity> _pokemonList = [];
+  final List<PokemonListEntity> _pokemonList = [];
   bool _isLoadingMore = false;
   bool _isFirstLoad = true; 
   int _offset = 0;
   final int _limit = 20;
+  String _searchTerm = '';
+  final TextEditingController _searchController = TextEditingController();
+
 
   @override
   void initState() {
@@ -28,6 +30,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
         _fetchPokemons();
       }
     });
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
@@ -39,12 +42,19 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchPokemons() async {
     setState(() {
       _isLoadingMore = true;
     });
     try {
-      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset);
+      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, _searchTerm);
       setState(() {
         _pokemonList.addAll(newPokemons);
         _offset += _limit;
@@ -60,22 +70,62 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
   final controller = ScrollController();
 
+  void _onSearchChanged() {
+    setState(() {
+      _searchTerm = _searchController.text;
+      _offset = 0;
+      _pokemonList.clear();
+    });
+    _fetchPokemons();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-        controller: controller,
-        itemCount: _pokemonList.length + 1,
-        itemBuilder: (context, index) {
-          if (index == _pokemonList.length) {
-            return _isLoadingMore
-                ? Center(child: CircularProgressIndicator())
-                : SizedBox.shrink();
-          }
-          final pokemon = _pokemonList[index];
-          return PokemonListTile(pokemon: pokemon);
-        },
-      ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search Pokémon',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.filter_alt),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.sort),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView.builder(
+            controller: controller,
+            itemCount: _pokemonList.length + 1,
+            itemBuilder: (context, index) {
+              if (index == _pokemonList.length) {
+                return _isLoadingMore && _pokemonList.length != _limit+_offset
+                    ? const Center(child: CircularProgressIndicator())
+                    : const SizedBox.shrink();
+              }
+              final pokemon = _pokemonList[index];
+              return PokemonListTile(pokemon: pokemon);
+            },
+          ),
+        ),
+      ],
     );
   }
 }

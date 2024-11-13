@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';
 import 'package:pokedex_app/src/views/home/widgets/pokemon_list_screen.dart';
 
