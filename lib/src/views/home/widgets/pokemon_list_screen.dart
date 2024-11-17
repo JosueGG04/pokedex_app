@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';  
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
+import 'package:pokedex_app/src/views/home/widgets/filters_modal.dart';
 import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart'; 
 
 class PokemonListScreen extends StatefulWidget {
@@ -54,7 +55,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       _isLoadingMore = true;
     });
     try {
-      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, _searchTerm);
+      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm);
       setState(() {
         _pokemonList.addAll(newPokemons);
         _offset += _limit;
@@ -102,7 +103,14 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             ),
             IconButton(
               icon: Icon(Icons.filter_alt),
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return const FiltersModal();
+                  },
+                );
+              },
             ),
             IconButton(
               icon: Icon(Icons.sort),
