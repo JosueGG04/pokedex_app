@@ -21,6 +21,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   final int _limit = 20;
   String _searchTerm = '';
   final TextEditingController _searchController = TextEditingController();
+  final List<String> _typeFilters = [];
 
 
   @override
@@ -55,7 +56,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       _isLoadingMore = true;
     });
     try {
-      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm);
+      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters);
       setState(() {
         _pokemonList.addAll(newPokemons);
         _offset += _limit;
@@ -70,14 +71,26 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   final controller = ScrollController();
+  void _refreshList() {
+    setState(() {
+      _clearList();
+      _fetchPokemons();
+    });
+    controller.jumpTo(0);
+  }
+
+  void _clearList() {
+    setState(() {
+      _offset = 0;
+      _pokemonList.clear();
+    });
+  }
 
   void _onSearchChanged() {
     setState(() {
       _searchTerm = _searchController.text;
-      _offset = 0;
-      _pokemonList.clear();
     });
-    _fetchPokemons();
+    _refreshList();
   }
 
   @override
@@ -107,14 +120,15 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                 showModalBottomSheet(
                   context: context,
                   builder: (context) {
-                    return const FiltersModal();
+                    return FiltersModal(typeFilters: _typeFilters, refreshList: _refreshList,);
                   },
                 );
               },
             ),
             IconButton(
               icon: Icon(Icons.sort),
-              onPressed: () {},
+              onPressed: () {
+              },
             ),
           ],
         ),
