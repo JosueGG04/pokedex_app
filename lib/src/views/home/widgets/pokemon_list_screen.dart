@@ -22,6 +22,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   String _searchTerm = '';
   final TextEditingController _searchController = TextEditingController();
   final List<String> _typeFilters = [];
+  String _selectedGen = '';
 
 
   @override
@@ -56,7 +57,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       _isLoadingMore = true;
     });
     try {
-      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters);
+      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters, generation: _selectedGen);
       setState(() {
         _pokemonList.addAll(newPokemons);
         _offset += _limit;
@@ -83,6 +84,12 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     setState(() {
       _offset = 0;
       _pokemonList.clear();
+    });
+  }
+
+  void _onGenSelected(String gen) {
+    setState(() {
+      _selectedGen = gen;
     });
   }
 
@@ -120,7 +127,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                 showModalBottomSheet(
                   context: context,
                   builder: (context) {
-                    return FiltersModal(typeFilters: _typeFilters, refreshList: _refreshList,);
+                    return FiltersModal(typeFilters: _typeFilters, selectedGen: _selectedGen, refreshList: _refreshList, onGenSelected: _onGenSelected,);
                   },
                 );
               },

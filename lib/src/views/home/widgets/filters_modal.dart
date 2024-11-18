@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex_app/core/utils/full_filters.dart';
+import 'package:pokedex_app/core/utils/filter_utils.dart';
 import 'package:pokedex_app/core/utils/type_colors.dart';
 
 class FiltersModal extends StatefulWidget {
-  FiltersModal({super.key, required this.typeFilters, required this.refreshList});
+  FiltersModal({super.key, required this.typeFilters, required this.refreshList, required this.selectedGen, required this.onGenSelected});
   final List<Tab> tabs = [
     const Tab(text: 'Types'),
     const Tab(text: 'Generation'),
   ];
   final List<String> typeFilters;
+  final String selectedGen;
   final Function() refreshList;
+  final Function(String) onGenSelected;
   
 
   @override
@@ -53,9 +55,7 @@ class _FiltersModalState extends State<FiltersModal> with SingleTickerProviderSt
               controller: _tabController,
               children: [
                 TypeFilter(typeFilters: widget.typeFilters, refreshList: widget.refreshList),
-                Container(
-                  color: Colors.blue,
-                ),
+                GenerationFilter(selectedGen: widget.selectedGen, refreshList: widget.refreshList, onGenSelected: widget.onGenSelected,),
               ],
             ),
           ),
@@ -153,6 +153,7 @@ class _TypeFilterState extends State<TypeFilter> {
               },
               backgroundColor: typeColors[type]!,
               selectedColor: typeColors[type]!.withOpacity(0.5),
+              showCheckmark: false,
             );
           }).toList(),
         ],
@@ -162,3 +163,65 @@ class _TypeFilterState extends State<TypeFilter> {
 }
 
 //generation filter
+class GenerationFilter extends StatefulWidget {
+  GenerationFilter({super.key, required this.selectedGen, required this.refreshList, required this.onGenSelected});
+  final String selectedGen;
+  final Function(String) onGenSelected;
+  final Function() refreshList;
+  
+  @override
+  _GenerationFilterState createState() => _GenerationFilterState();
+}
+
+class _GenerationFilterState extends State<GenerationFilter> {
+  late String _selectedGen;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedGen = widget.selectedGen;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+            TextButton(
+            onPressed: _selectedGen.isEmpty ? null : () {
+              setState(() {
+                _selectedGen = "";
+              }); 
+              widget.onGenSelected("");
+              widget.refreshList();
+            }, 
+            child: Text("Clear", style: TextStyle(color: _selectedGen.isEmpty ? Colors.grey : Colors.blue)),
+            ),
+          Wrap(
+            runAlignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              ...pokemonGenerationsList.map((gen) {
+                return FilterChip(
+                  label: Text(gen, style: const TextStyle(color: Colors.white)),
+                  selected: _selectedGen == gen,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      _selectedGen = gen;
+                    });
+                    widget.onGenSelected(gen);
+                    widget.refreshList();
+                  },
+                  backgroundColor: Colors.grey,
+                  selectedColor: Colors.grey.withOpacity(0.5),
+                );
+              }).toList(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
