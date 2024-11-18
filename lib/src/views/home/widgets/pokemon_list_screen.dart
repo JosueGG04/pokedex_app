@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';  
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
+import 'package:pokedex_app/src/views/home/widgets/filters_modal.dart';
 import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart'; 
 
 class PokemonListScreen extends StatefulWidget {
@@ -20,6 +21,8 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   final int _limit = 20;
   String _searchTerm = '';
   final TextEditingController _searchController = TextEditingController();
+  final List<String> _typeFilters = [];
+  String _selectedGen = '';
 
 
   @override
@@ -54,7 +57,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       _isLoadingMore = true;
     });
     try {
-      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, _searchTerm);
+      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters, generation: _selectedGen);
       setState(() {
         _pokemonList.addAll(newPokemons);
         _offset += _limit;
@@ -69,14 +72,32 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   final controller = ScrollController();
+  void _refreshList() {
+    setState(() {
+      _clearList();
+      _fetchPokemons();
+    });
+    controller.jumpTo(0);
+  }
+
+  void _clearList() {
+    setState(() {
+      _offset = 0;
+      _pokemonList.clear();
+    });
+  }
+
+  void _onGenSelected(String gen) {
+    setState(() {
+      _selectedGen = gen;
+    });
+  }
 
   void _onSearchChanged() {
     setState(() {
       _searchTerm = _searchController.text;
-      _offset = 0;
-      _pokemonList.clear();
     });
-    _fetchPokemons();
+    _refreshList();
   }
 
   @override
@@ -102,11 +123,19 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             ),
             IconButton(
               icon: Icon(Icons.filter_alt),
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return FiltersModal(typeFilters: _typeFilters, selectedGen: _selectedGen, refreshList: _refreshList, onGenSelected: _onGenSelected,);
+                  },
+                );
+              },
             ),
             IconButton(
               icon: Icon(Icons.sort),
-              onPressed: () {},
+              onPressed: () {
+              },
             ),
           ],
         ),
