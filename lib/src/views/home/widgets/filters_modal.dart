@@ -116,7 +116,7 @@ class _TypeFilterState extends State<TypeFilter> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
       child: Wrap(
         runAlignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
@@ -184,7 +184,7 @@ class _GenerationFilterState extends State<GenerationFilter> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
       child: Column(
         children: [
             TextButton(
