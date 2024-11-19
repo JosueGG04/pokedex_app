@@ -43,6 +43,7 @@ class PokemonDetailsRepository {
     final QueryResult result = await client.query(QueryOptions(
       document: gql(getPokemonInfoQuery),
       variables: {'id': id},
+      fetchPolicy: FetchPolicy.noCache
     ));
 
     if (result.hasException) {
