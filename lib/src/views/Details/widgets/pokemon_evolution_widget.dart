@@ -77,6 +77,7 @@ class _PokemonEvolutionWidgetState extends State<PokemonEvolutionWidget> {
       evolutions[evolution.id] = evolution;
       final node = Node.Id(evolution.id);
       nodes[evolution.id] = node;
+      graph.addNode(node);
     }
 
     for (var evolution in widget.evolutions) {
