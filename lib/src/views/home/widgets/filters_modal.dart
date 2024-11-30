@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';
 import 'package:pokedex_app/core/utils/filter_utils.dart';
 import 'package:pokedex_app/core/utils/type_colors.dart';
 
 class FiltersModal extends StatefulWidget {
-  FiltersModal({super.key, required this.typeFilters, required this.refreshList, required this.selectedGen, required this.onGenSelected});
+  FiltersModal({super.key, required this.typeFilters, required this.refreshList, required this.selectedGen, required this.onGenSelected, required this.selectedAbility, required this.onAbilitySelected, required this.repository});
   final List<Tab> tabs = [
     const Tab(text: 'Types'),
     const Tab(text: 'Generation'),
+    const Tab(text: 'Abilities'),
   ];
   final List<String> typeFilters;
   final String selectedGen;
+  final String selectedAbility;
   final Function() refreshList;
   final Function(String) onGenSelected;
+  final Function(String) onAbilitySelected;
+  final PokemonListRepository repository;
   
 
   @override
@@ -21,17 +26,21 @@ class FiltersModal extends StatefulWidget {
 
 class _FiltersModalState extends State<FiltersModal> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late String _selectedGen;
+  late String _selectedAbility;
 
   @override
   initState() {
     super.initState();
     _tabController = TabController(length: widget.tabs.length, vsync: this);
+    _selectedAbility = widget.selectedAbility;
+    _selectedGen = widget.selectedGen;
   }
 
   @override
   dispose() {
-    _tabController.dispose();
     super.dispose();
+    _tabController.dispose();
   }
 
 
@@ -54,8 +63,33 @@ class _FiltersModalState extends State<FiltersModal> with SingleTickerProviderSt
             child: TabBarView(
               controller: _tabController,
               children: [
-                TypeFilter(typeFilters: widget.typeFilters, refreshList: widget.refreshList),
-                GenerationFilter(selectedGen: widget.selectedGen, refreshList: widget.refreshList, onGenSelected: widget.onGenSelected,),
+                TypeFilter(
+                  typeFilters: widget.typeFilters, 
+                  refreshList: widget.refreshList
+                ),
+                GenerationFilter(
+                  selectedGen: _selectedGen, 
+                  onGenSelected: (gen) {
+                    setState(() {
+                      _selectedGen = gen;
+                    });
+                    widget.onGenSelected(gen);
+                    widget.refreshList();
+                  },
+                  refreshList: widget.refreshList, 
+                ),
+                AbilityFilter(
+                  selectedAbility: _selectedAbility, 
+                  onAbilitySelected: (ability) {
+                    setState(() {
+                      _selectedAbility = ability;
+                    });
+                    widget.onAbilitySelected(ability);
+                    widget.refreshList();
+                  },
+                  refreshList: widget.refreshList, 
+                  repository: widget.repository, 
+                ),
               ],
             ),
           ),
@@ -117,45 +151,58 @@ class _TypeFilterState extends State<TypeFilter> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Wrap(
-        runAlignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        runSpacing: 4,
+      child: Column(
         children: [
-          ...pokemonTypesList.map((type) {
-            return FilterChip(
-              label: Column(
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+          TextButton(
+            onPressed: _selectedFilters.isEmpty ? null : () {
+              setState(() {
+                _selectedFilters.clear();
+              }); 
+              widget.refreshList();
+            },
+            child: Text("Clear", style: TextStyle(color: _selectedFilters.isEmpty ? Colors.grey : Colors.blue)),
+          ),
+          Wrap(
+            runAlignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              ...pokemonTypesList.map((type) {
+                return FilterChip(
+                  label: Column(
                     children: [
-                      SvgPicture.asset(
-                        'assets/icons/$type.svg',
-                        width: 20,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/icons/$type.svg',
+                            width: 20,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(type, style: const TextStyle(color: Colors.white)),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      Text(type, style: const TextStyle(color: Colors.white)),
                     ],
                   ),
-                ],
-              ),
-              selected: _selectedFilters.contains(type),
-              onSelected: (bool selected) {
-                setState(() {
-                  if (selected) {
-                    _selectedFilters.add(type);
-                  } else {
-                    _selectedFilters.remove(type);
-                  }
-                });
-                widget.refreshList();
-              },
-              backgroundColor: typeColors[type]!,
-              selectedColor: typeColors[type]!.withOpacity(0.5),
-              showCheckmark: false,
-            );
-          }).toList(),
+                  selected: _selectedFilters.contains(type),
+                  onSelected: (bool selected) {
+                    setState(() {
+                      if (selected) {
+                        _selectedFilters.add(type);
+                      } else {
+                        _selectedFilters.remove(type);
+                      }
+                    });
+                    widget.refreshList();
+                  },
+                  backgroundColor: typeColors[type]!,
+                  selectedColor: typeColors[type]!.withOpacity(0.5),
+                  showCheckmark: false,
+                );
+              }).toList(),
+            ],
+          ),
         ],
       ),
     );
@@ -187,16 +234,15 @@ class _GenerationFilterState extends State<GenerationFilter> {
     return SingleChildScrollView(
       child: Column(
         children: [
-            TextButton(
+          TextButton(
             onPressed: _selectedGen.isEmpty ? null : () {
               setState(() {
                 _selectedGen = "";
               }); 
               widget.onGenSelected("");
-              widget.refreshList();
             }, 
             child: Text("Clear", style: TextStyle(color: _selectedGen.isEmpty ? Colors.grey : Colors.blue)),
-            ),
+          ),
           Wrap(
             runAlignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
@@ -212,12 +258,163 @@ class _GenerationFilterState extends State<GenerationFilter> {
                       _selectedGen = gen;
                     });
                     widget.onGenSelected(gen);
-                    widget.refreshList();
                   },
                   backgroundColor: Colors.grey,
                   selectedColor: Colors.grey.withOpacity(0.5),
                 );
-              }).toList(),
+              }),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+//ability filter
+class AbilityFilter extends StatefulWidget {
+  AbilityFilter({super.key, required this.selectedAbility, required this.refreshList, required this.repository, required this.onAbilitySelected});
+  late final String selectedAbility;
+  final Function() refreshList;
+  final Function(String) onAbilitySelected;
+  final PokemonListRepository repository;
+  
+  @override
+  _AbilityFilterState createState() => _AbilityFilterState();
+}
+
+class _AbilityFilterState extends State<AbilityFilter> {
+  late String _selectedAbility;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchTerm = '';
+  int limit = 50;
+  int offset = 0;
+  bool _isLoadingMore = false;
+  bool _isFirstLoad = true; 
+  final List<String> pokemonAbilitiesList = [];
+  final controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(() {
+      if (controller.position.maxScrollExtent == controller.offset && !_isLoadingMore) {
+        _fetchAbilities();
+      }
+    });
+    _selectedAbility = widget.selectedAbility;
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isFirstLoad) {
+      _isFirstLoad = false;
+      _fetchAbilities();
+    }
+  }
+
+  Future<void> _fetchAbilities() async {
+    setState(() {
+      _isLoadingMore = true;
+    });
+    try {
+      final newAbilities = await widget.repository.getPokemonAbilities(context, limit: limit, offset: offset, searchTerm: _searchTerm);
+      setState(() {
+        pokemonAbilitiesList.addAll(newAbilities);
+        offset += limit;
+      });
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        _isLoadingMore = false;
+      });
+    }
+  }
+
+  void _clearList() {
+    setState(() {
+      pokemonAbilitiesList.clear();
+      offset = 0;
+    });
+  }
+
+  void _refreshList() {
+    setState(() {
+      _clearList();
+      _fetchAbilities();
+    });
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchTerm = _searchController.text;
+    });
+    _refreshList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      controller: controller,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search Pokémon',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          TextButton(
+            onPressed: _selectedAbility.isEmpty ? null : () {
+              setState(() {
+                _selectedAbility = "";
+              });
+              widget.onAbilitySelected("");
+            }, 
+            child: Text("Clear", style: TextStyle(color: _selectedAbility.isEmpty ? Colors.grey : Colors.blue)),
+          ),
+          Wrap(
+            runAlignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              ...pokemonAbilitiesList.map((ability) {
+                return FilterChip(
+                  label: Text(ability, style: const TextStyle(color: Colors.white)),
+                  selected: _selectedAbility == ability,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      _selectedAbility = ability;
+                    });
+                    widget.onAbilitySelected(ability);
+                  },
+                  backgroundColor: Colors.grey,
+                  selectedColor: Colors.grey.withOpacity(0.5),
+                );
+              }),
             ],
           ),
         ],

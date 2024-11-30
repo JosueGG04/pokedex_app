@@ -7,7 +7,7 @@ class PokemonListRepository {
 
   String getPokemonsQuery = """
   query getPokemons(\$limit: Int = 20, \$offset: Int = 0, \$searchTerm: String = "%%", \$types: [String] = "\$") {
-    pokemon_v2_pokemon(offset: \$offset, limit: \$limit, where: {pokemon_v2_pokemonspecy: {name: {_ilike: \$searchTerm}{gen}}, is_default: {_eq: true}, pokemon_v2_pokemontypes: {pokemon_v2_type: {name: {_in: \$types}}}}, order_by: {pokemon_species_id: asc}) {
+    pokemon_v2_pokemon(offset: \$offset, limit: \$limit, where: {pokemon_v2_pokemonspecy: {name: {_ilike: \$searchTerm}{gen}}, is_default: {_eq: true}, pokemon_v2_pokemontypes: {pokemon_v2_type: {name: {_in: \$types}}}{ability}}, order_by: {pokemon_species_id: asc}) {
       id
       pokemon_v2_pokemonspecy {
         pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) {
@@ -27,12 +27,10 @@ class PokemonListRepository {
   }
   """;
 
-  Future<List<PokemonListEntity>> getPokemons(BuildContext context, int limit, int offset, {String searchTerm = "", List<String> types = pokemonTypesList, String generation = ""}) async {
+  Future<List<PokemonListEntity>> getPokemons(BuildContext context, int limit, int offset, {String searchTerm = "", List<String> types = pokemonTypesList, String generation = "", String ability = ""}) async {
     types = types.isEmpty ? pokemonTypesList : types;
-    if (generation != "") {
-      generation = generationFilter(generation);
-    }
-    String finalQuery = getPokemonsQuery.replaceAll("{gen}", generation);
+    String finalQuery = getPokemonsQuery.replaceAll("{gen}", generationFilter(generation));
+    finalQuery = finalQuery.replaceAll("{ability}", abilityFilter(ability));
     final client = GraphQLProvider.of(context).value;
 
     final QueryResult result = await client.query(QueryOptions(
@@ -61,5 +59,40 @@ class PokemonListRepository {
     }
     int gen = genNameToId[generation]!;
     return ", generation_id: {_eq: $gen}";
+  }
+
+  String abilityFilter(String ability) {
+    if (ability == "") {
+      return "";
+    }
+    return ", pokemon_v2_pokemonabilities: {pokemon_v2_ability: {name: {_eq: \"$ability\"}}}";
+  }
+
+  //String ability list query
+  String getPokemonAbilitiesQuery = """
+  query getPokemonAbilities(\$searchTerm: String = "%%", \$limit: Int = 50, \$offset: Int = 10) {
+    pokemon_v2_pokemonability(distinct_on: ability_id, order_by: {ability_id: asc, pokemon_v2_ability: {}}, where: {pokemon_v2_ability: {name: {_like: \$searchTerm}}}, offset: \$offset, limit: \$limit) {
+      pokemon_v2_ability {
+        name
+      }
+    }
+  }
+  """;
+
+  Future<List<String>> getPokemonAbilities(BuildContext context, {String searchTerm = "", int limit = 50, int offset = 0}) async {
+    final client = GraphQLProvider.of(context).value;
+
+    final QueryResult result = await client.query(QueryOptions(
+      document: gql(getPokemonAbilitiesQuery),
+      variables: {'searchTerm': '%$searchTerm%', 'limit': limit, 'offset': offset},
+    ));
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final abilities = result.data!['pokemon_v2_pokemonability'] as List;
+
+    return abilities.map<String>((ability) => ability['pokemon_v2_ability']['name']).toList();
   }
 }
