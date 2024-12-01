@@ -375,7 +375,7 @@ class _AbilityFilterState extends State<AbilityFilter> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Search Pokémon',
+                      hintText: 'Search Ability',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
