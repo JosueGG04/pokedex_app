@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_app/core/routes/route_generator.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex_app/core/utils/LocalStorage.dart';
 
 void main() async{
   await initHiveForFlutter();
-
+  await LocalStorage.init();
+  LocalStorage.favoritesInit();
   final HttpLink httpLink = HttpLink('https://beta.pokeapi.co/graphql/v1beta'); 
 
   final GraphQLClient client = GraphQLClient(
