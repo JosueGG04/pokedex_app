@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokedex_app/core/entities/pokemon_evolution_entity.dart';
+import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
 import '../entities/pokemon_abilities_entity.dart';
 import '../entities/pokemon_info_entity.dart';
 import '../entities/pokemon_moves_entity.dart';
@@ -41,6 +43,7 @@ class PokemonDetailsRepository {
     final QueryResult result = await client.query(QueryOptions(
       document: gql(getPokemonInfoQuery),
       variables: {'id': id},
+      fetchPolicy: FetchPolicy.noCache
     ));
 
     if (result.hasException) {
@@ -160,6 +163,78 @@ class PokemonDetailsRepository {
               power: move['pokemon_v2_move']['power'],
               level: move['level'],
               type: [move['pokemon_v2_move']['pokemon_v2_type']['name']],
+            ))
+        .toList();
+  }
+
+  String getPokemonEvolutionQuery = """
+  query getEvolutionChain(\$id: Int = 1) {
+    pokemon_v2_pokemon_by_pk(id: \$id) {
+      id
+      name
+      pokemon_v2_pokemonspecy {
+        pokemon_v2_evolutionchain {
+          id
+          pokemon_v2_pokemonspecies {
+            evolves_from_species_id
+            id
+            name
+            pokemon_v2_pokemons(where: {is_default: {_eq: true}}) {
+              id
+              pokemon_v2_pokemonsprites {
+                sprites(path: "other.home.front_default")
+              }
+              pokemon_v2_pokemontypes {
+                pokemon_v2_type {
+                  name
+                }
+              }
+              pokemon_v2_pokemonspecy {
+                pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) {
+                  pokemon_species_id
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  """;
+
+  Future<List<PokemonEvolutionEntity>> getPokemonEvolution(
+      BuildContext context, int id) async {
+    final client = GraphQLProvider.of(context).value;
+
+    final QueryResult result = await client.query(QueryOptions(
+      document: gql(getPokemonEvolutionQuery),
+      variables: {'id': id},
+    ));
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final pokemon = result.data!['pokemon_v2_pokemon_by_pk'];
+    final evolutionChain = pokemon['pokemon_v2_pokemonspecy']
+        ['pokemon_v2_evolutionchain']['pokemon_v2_pokemonspecies'];
+    
+    return evolutionChain
+        .map<PokemonEvolutionEntity>((evolution) => PokemonEvolutionEntity(
+              id: evolution['id'],
+              evolvesFromId: evolution['evolves_from_species_id'],
+              pokemonListTile: PokemonListEntity(
+                id: evolution['pokemon_v2_pokemons'][0]['id'],
+                pokedexNumber: evolution['pokemon_v2_pokemons'][0]['pokemon_v2_pokemonspecy']
+                    ['pokemon_v2_pokemonspeciesnames'][0]['pokemon_species_id'],
+                name: evolution['name'],
+                spriteUrl: evolution['pokemon_v2_pokemons'][0]
+                    ['pokemon_v2_pokemonsprites'][0]['sprites'],
+                type: (evolution['pokemon_v2_pokemons'][0]['pokemon_v2_pokemontypes']
+                        as List)
+                    .map<String>((type) => type['pokemon_v2_type']['name'])
+                    .toList(),
+              ),
             ))
         .toList();
   }

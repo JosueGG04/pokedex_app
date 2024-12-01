@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pokedex_app/core/entities/pokemon_evolution_entity.dart';
 import 'package:pokedex_app/core/entities/pokemon_stats_entity.dart';
+import 'package:pokedex_app/src/views/Details/widgets/pokemon_evolution_widget.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_info_tab.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_moves_tab.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_stats_tab.dart';
@@ -27,11 +29,12 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
   late TabController _tabController;
   late PokemonStatsEntity _pokemonStats;
   late List<PokemonMovesEntity> _pokemonMoves;
+  late List<PokemonEvolutionEntity> _pokemonEvolutionList;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _pokemonInfo = PokemonInfoEntity(
         id: widget.pokemon.pokedexNumber,
         genus: '',
@@ -48,6 +51,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
         specialDefense: 0,
         speed: 0);
     _pokemonMoves = [];
+    _pokemonEvolutionList = [];
   }
 
   @override
@@ -92,12 +96,25 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
     }
   }
 
+  Future<void> _fetchPokemonEvolution() async {
+    try {
+      final pokemonEvolutionList = await widget.repository.getPokemonEvolution(
+          context, widget.pokemon.id);
+      setState(() {
+        _pokemonEvolutionList = pokemonEvolutionList;
+      });
+    } catch (e) {
+      print('Error al cargar evolución del Pokémon: $e');
+    }
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _fetchPokemonInfo();
     _fetchPokemonStats();
     _fetchPokemonMoves();
+    _fetchPokemonEvolution();
   }
 
   @override
@@ -149,11 +166,13 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                         Tab(text: 'Info'),
                         Tab(text: 'Stats'),
                         Tab(text: 'Moves'),
+                        Tab(text: 'Evolution'),
                       ],
                     ),
                     Expanded(
                       child: TabBarView(
                         controller: _tabController,
+                        physics: const NeverScrollableScrollPhysics(),
                         children: [
                           PokemonInfoTab(
                               pokemonInfo: _pokemonInfo,
@@ -164,6 +183,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                           PokemonMovesTab(
                               pokemonMoves: _pokemonMoves,
                               pokemon: widget.pokemon),
+                          PokemonEvolutionWidget(evolutions: _pokemonEvolutionList),
                         ],
                       ),
                     ),
