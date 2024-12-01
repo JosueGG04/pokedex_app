@@ -10,6 +10,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -17,7 +18,28 @@ class _HomeState extends State<Home> {
         appBar: AppBar(
           title: const Text('PokeDex'),
         ),
-        body: PokemonListScreen(repository: PokemonListRepository()),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentPageIndex,
+          onTap: (index) {
+            setState(() {
+              currentPageIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.star),
+              label: 'Favorites',
+            ),
+          ],
+        ),
+        body: <Widget>[
+          PokemonListScreen(key: const Key("Normal"), repository: PokemonListRepository()),
+          PokemonListScreen(key: const Key("Favorites"), repository: PokemonListRepository(), isFavorites: true),
+        ][currentPageIndex],
       ),
     );
   }

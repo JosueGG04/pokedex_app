@@ -6,8 +6,9 @@ import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart';
 
 class PokemonListScreen extends StatefulWidget {
   final PokemonListRepository repository;
+  final bool isFavorites;
 
-  const PokemonListScreen({super.key, required this.repository});
+  const PokemonListScreen({super.key, required this.repository, this.isFavorites = false});
 
   @override
   _PokemonListScreenState createState() => _PokemonListScreenState();
@@ -58,7 +59,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       _isLoadingMore = true;
     });
     try {
-      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters, generation: _selectedGen, ability: _selectedAbility);
+      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters, generation: _selectedGen, ability: _selectedAbility, favorites: widget.isFavorites);
       setState(() {
         _pokemonList.addAll(newPokemons);
         _offset += _limit;

@@ -12,4 +12,8 @@ class LocalStorage {
       prefs.setStringList('favorites', []);
     }
   }
+
+  static List<int> getFavorites() {
+    return prefs.getStringList('favorites')!.map((e) => int.parse(e)).toList();
+  }
 }

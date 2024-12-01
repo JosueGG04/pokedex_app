@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
+import 'package:pokedex_app/core/utils/LocalStorage.dart';
 import 'package:pokedex_app/core/utils/filter_utils.dart';
 
 class PokemonListRepository {
 
   String getPokemonsQuery = """
   query getPokemons(\$limit: Int = 20, \$offset: Int = 0, \$searchTerm: String = "%%", \$types: [String] = "\$") {
-    pokemon_v2_pokemon(offset: \$offset, limit: \$limit, where: {pokemon_v2_pokemonspecy: {name: {_ilike: \$searchTerm}{gen}}, is_default: {_eq: true}, pokemon_v2_pokemontypes: {pokemon_v2_type: {name: {_in: \$types}}}{ability}}, order_by: {pokemon_species_id: asc}) {
+    pokemon_v2_pokemon(offset: \$offset, limit: \$limit, where: {pokemon_v2_pokemonspecy: {name: {_ilike: \$searchTerm}{gen}}, is_default: {_eq: true}, pokemon_v2_pokemontypes: {pokemon_v2_type: {name: {_in: \$types}}}{favorites}{ability}}, order_by: {pokemon_species_id: asc}) {
       id
       pokemon_v2_pokemonspecy {
         pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) {
@@ -27,10 +28,11 @@ class PokemonListRepository {
   }
   """;
 
-  Future<List<PokemonListEntity>> getPokemons(BuildContext context, int limit, int offset, {String searchTerm = "", List<String> types = pokemonTypesList, String generation = "", String ability = ""}) async {
+  Future<List<PokemonListEntity>> getPokemons(BuildContext context, int limit, int offset, {String searchTerm = "", List<String> types = pokemonTypesList, String generation = "", String ability = "", bool favorites = false}) async {
     types = types.isEmpty ? pokemonTypesList : types;
     String finalQuery = getPokemonsQuery.replaceAll("{gen}", generationFilter(generation));
     finalQuery = finalQuery.replaceAll("{ability}", abilityFilter(ability));
+    finalQuery = finalQuery.replaceAll("{favorites}", favoritesFilter(LocalStorage.getFavorites(), isFavoriteList: favorites));
     final client = GraphQLProvider.of(context).value;
 
     final QueryResult result = await client.query(QueryOptions(
@@ -66,6 +68,13 @@ class PokemonListRepository {
       return "";
     }
     return ", pokemon_v2_pokemonabilities: {pokemon_v2_ability: {name: {_eq: \"$ability\"}}}";
+  }
+
+  String favoritesFilter(List<int> favorites, {bool isFavoriteList = false}) {
+    if (!isFavoriteList) {
+      return "";
+    }
+    return ", id: {_in: ${favorites.toString()}}";
   }
 
   //String ability list query
