@@ -24,6 +24,7 @@ Esta aplicación consume datos de desde la PokeAPI  externa utilizando **GraphQL
 - graphql_flutter
 - flutter_svg
 - graphview
+- sharedPreferences
 
 ## Configuración e Instalación
 
@@ -88,3 +89,19 @@ query pokemonInfo(\$id: Int = 1) {
 ## Decisiones de Diseño 
 
 ## Componentes de Flutter:
+La aplicación está conformada por diferentes pantallas, cada una diseñada una experiencia de usuario gratificante. A continuación se explican todas las pantallas y los componentes utilizados en estas:
+
+### 1. Lista de Pokémon
+Muestra una lista interactiva y desplazable de Pokémon, incluyendo sus imágenes, nombres, número de pokedex y sus tipos, que permite al usuario explorar y elegir un Pokémon para consultar información más detallada, tambien permite agregar un Pokémon a la lista de favoritos a la cual se puede acceder desde el panel de navegación inferior.
+
+**Componetes:**
+- `Scafold`: Estructura básica de la pantalla.
+- `Column`: Organiza los elementos principales verticalmente.
+- `Row`: Organiza los elementos superiores horizontalmente.
+- `IconButton`: botones que acceden a los filtros y
+- `FiltersModal`: widget personalizado que permite que el usuario seleccione entre filtros de tipo, generacion y habilidades.
+- `OrderModal` (placeholder name): WIP
+- `TextField`: campo de input de texto que permite la busqueda de Pokémons por nombre. 
+- `List.Builder`: Crea una lista desplazable que muestra los Pokémon en un `PokemonListTile`.
+- `PokemonListTile`: widget personalizado que dados los datos básicos de un Pokémon crea un elemento el cual al ser presionado envia a la pagina de informacion del Pokémon. Este elemento tambien posee un boton (con forma de estrella) que permite agregar el Pokémon a la lista de favoritos.
+- `BottomNavigationBar`: widget que permite intercambiar entre widgets en un arreglo de widgets encontrado en el `body` del `Scafold` (en este caso entre la lista principal y la lista de favoritos)
