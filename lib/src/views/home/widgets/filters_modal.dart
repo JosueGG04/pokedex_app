@@ -51,7 +51,7 @@ class _FiltersModalState extends State<FiltersModal> with SingleTickerProviderSt
       width: MediaQuery.of(context).size.width,
       child: Column(
         children: [
-          FilterModalTopBar(),
+          const FilterModalTopBar(),
           TabBar(
             controller: _tabController,
             tabs: widget.tabs,
