@@ -4,6 +4,8 @@ import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
 import 'package:pokedex_app/core/utils/LocalStorage.dart';
 import 'package:pokedex_app/core/utils/filter_utils.dart';
 
+import '../utils/order_utils.dart';
+
 class PokemonListRepository {
 
   String getPokemonsQuery = """
@@ -28,9 +30,12 @@ class PokemonListRepository {
   }
   """;
 
-  Future<List<PokemonListEntity>> getPokemons(BuildContext context, int limit, int offset, {String searchTerm = "", List<String> types = pokemonTypesList, String generation = "", String ability = "", bool favorites = false}) async {
+  Future<List<PokemonListEntity>> getPokemons(BuildContext context, int limit, int offset, {String searchTerm = "", List<String> types = pokemonTypesList, String generation = "", String ability = "", bool favorites = false, orderBy = "", order = "asc"}) async {
     types = types.isEmpty ? pokemonTypesList : types;
     String finalQuery = getPokemonsQuery.replaceAll("{gen}", generationFilter(generation));
+    if (orderBy != "") {
+      finalQuery = finalQuery.replaceAll(", order_by: {pokemon_species_id: asc}", orderByQuery(orderBy, order));
+    }
     finalQuery = finalQuery.replaceAll("{ability}", abilityFilter(ability));
     finalQuery = finalQuery.replaceAll("{favorites}", favoritesFilter(LocalStorage.getFavorites(), isFavoriteList: favorites));
     final client = GraphQLProvider.of(context).value;
@@ -55,6 +60,18 @@ class PokemonListRepository {
     )).toList();
   }
 
+  String orderByQuery(String orderBy, String order) {
+    String query = "";
+    if (orderBy == "ID" || orderBy == "Name") {
+      query = queryOrder[orderBy]!;
+      return ", order_by: {$query : $order}";
+    } else if (orderBy == "Ability" || orderBy == "Type") {
+      query = queryOrder[orderBy]!;
+      return ", order_by: {$query: $order}}}";
+    }
+    return "";
+  }
+
   String generationFilter(String generation) {
     if (generation == "") {
       return "";
@@ -62,6 +79,7 @@ class PokemonListRepository {
     int gen = genNameToId[generation]!;
     return ", generation_id: {_eq: $gen}";
   }
+
 
   String abilityFilter(String ability) {
     if (ability == "") {
