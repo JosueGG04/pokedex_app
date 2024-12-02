@@ -16,9 +16,14 @@ Esta aplicación consume datos de desde la PokeAPI  externa utilizando **GraphQL
 
 
 ## Tecnologías Utilizadas
+### Tecnologías
 - Flutter
 - PokeAPI
 - GraphQL
+### Librerias
+- graphql_flutter
+- flutter_svg
+- graphview
 
 ## Configuración e Instalación
 
