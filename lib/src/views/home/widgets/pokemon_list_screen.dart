@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';  
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
 import 'package:pokedex_app/src/views/home/widgets/filters_modal.dart';
-import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart'; 
+import 'package:pokedex_app/src/views/home/widgets/pokemon_list_tile.dart';
+
+import 'order_modal.dart';
 
 class PokemonListScreen extends StatefulWidget {
   final PokemonListRepository repository;
@@ -25,6 +27,9 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   final List<String> _typeFilters = [];
   String _selectedGen = '';
   String _selectedAbility = '';
+  String _selectedAttribute = '';
+  String _selectedDirection = '';
+
 
 
   @override
@@ -59,7 +64,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       _isLoadingMore = true;
     });
     try {
-      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters, generation: _selectedGen, ability: _selectedAbility, favorites: widget.isFavorites);
+      final newPokemons = await widget.repository.getPokemons(context, _limit, _offset, searchTerm: _searchTerm, types: _typeFilters, generation: _selectedGen, ability: _selectedAbility, favorites: widget.isFavorites, orderBy: _selectedAttribute, order: _selectedDirection);
       setState(() {
         _pokemonList.addAll(newPokemons);
         _offset += _limit;
@@ -108,6 +113,14 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     });
   }
 
+  void _onOrderSelected(String attribute, String direction) {
+    setState(() {
+      _selectedAttribute = attribute;
+      _selectedDirection = direction;
+    });
+    _refreshList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -151,6 +164,16 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             IconButton(
               icon: Icon(Icons.sort),
               onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return OrderByModal(
+                      selectedAttribute: _selectedAttribute,
+                      selectedDirection: _selectedDirection,
+                      onOrderSelected: _onOrderSelected,
+                    );
+                  },
+                );
               },
             ),
           ],
