@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pokedex_app/core/entities/pokemon_evolution_entity.dart';
 import 'package:pokedex_app/core/entities/pokemon_stats_entity.dart';
+import 'package:pokedex_app/src/views/Details/widgets/pokemon_card.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_evolution_widget.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_info_tab.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_moves_tab.dart';
@@ -11,12 +12,17 @@ import '../../../../core/entities/pokemon_list_entity.dart';
 import '../../../../core/entities/pokemon_moves_entity.dart';
 import '../../../../core/repositories/pokemon_details_repository.dart';
 import '../../../../core/utils/type_colors.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 
 class PokemonInfoScreen extends StatefulWidget {
   final PokemonListEntity pokemon;
   final PokemonDetailsRepository repository;
+  final ScreenshotController screenshotController = ScreenshotController();
 
-  const PokemonInfoScreen(
+
+  PokemonInfoScreen(
       {super.key, required this.pokemon, required this.repository});
 
   @override
@@ -98,8 +104,8 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
 
   Future<void> _fetchPokemonEvolution() async {
     try {
-      final pokemonEvolutionList = await widget.repository.getPokemonEvolution(
-          context, widget.pokemon.id);
+      final pokemonEvolutionList = await widget.repository
+          .getPokemonEvolution(context, widget.pokemon.id);
       setState(() {
         _pokemonEvolutionList = pokemonEvolutionList;
       });
@@ -183,7 +189,8 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                           PokemonMovesTab(
                               pokemonMoves: _pokemonMoves,
                               pokemon: widget.pokemon),
-                          PokemonEvolutionWidget(evolutions: _pokemonEvolutionList),
+                          PokemonEvolutionWidget(
+                              evolutions: _pokemonEvolutionList),
                         ],
                       ),
                     ),
@@ -204,19 +211,37 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                 onPressed: () => Navigator.pop(context)),
           ),
           Positioned(
+            top: 30,
+            right: 5,
+            child: IconButton(
+              icon: const Icon(
+                Icons.share,
+                color: Colors.white,
+                size: 25,
+              ),
+              onPressed: () async {
+                final imagePath = await captureAndSaveScreenshot(widget.screenshotController);
+                if (imagePath.isNotEmpty) {
+                  final xFile = XFile(imagePath);
+                  Share.shareXFiles([xFile], text: 'Mira esta captura de pantalla');
+                }
+              },
+            ),
+          ),
+          Positioned(
             top: (height * 0.07),
             left: (width / 2) - 70,
             child: widget.pokemon.spriteUrl != null
                 ? Hero(
                     tag: widget.pokemon.id,
                     child: Image.network(
-                        widget.pokemon.spriteUrl,
-                        height: height * 0.30,
-                        fit: BoxFit.fitHeight,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.error),
-                      ),
-                )
+                      widget.pokemon.spriteUrl,
+                      height: height * 0.30,
+                      fit: BoxFit.fitHeight,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.error),
+                    ),
+                  )
                 : const Icon(Icons.image_not_supported),
           ),
           Positioned(
@@ -256,3 +281,5 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
     );
   }
 }
+
+
