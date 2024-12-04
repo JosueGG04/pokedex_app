@@ -25,6 +25,10 @@ Esta aplicación consume datos de desde la PokeAPI  externa utilizando **GraphQL
 - flutter_svg
 - graphview
 - sharedPreferences
+- Google fonts
+- screenshot
+- share plus 
+- pathprovider
 
 ## Configuración e Instalación
 
@@ -141,4 +145,7 @@ Cuando el usuario selecciona un Pokémon de la lista principal, se despliega una
   - **`SvgPicture`** para íconos visuales de tipos asociados a los movimientos.
   - Cada fila del **`Table`** muestra un movimiento individual.
 - **`PokemonEvolutions`**: Widget personalizado que muestra el árbol evolutivo del Pokémon.
+  - Utiliza la libreria `graphview` para mostrar la visualizacion del árbol evolutivo conseguido.
+  - Contiene la logica necesaria para armar el grafo apartir de la información conseguida de la llamada a la PokeAPI.
+  - `EvolutionTile` widget personalizado que muestra nodos del árbol evolutivo y al ser presionado lleva al usuario a la vista de información del Pokémon selecionado.
 
