@@ -149,3 +149,11 @@ Cuando el usuario selecciona un Pokémon de la lista principal, se despliega una
   - Contiene la logica necesaria para armar el grafo apartir de la información conseguida de la llamada a la PokeAPI.
   - `EvolutionTile` widget personalizado que muestra nodos del árbol evolutivo y al ser presionado lleva al usuario a la vista de información del Pokémon selecionado.
 
+## Créditos y Contribuciones
+Desarrollado por Josué García y Brigibel Martinez.
+
+Iconos de tipo: https://github.com/partywhale/pokemon-type-icons
+
+
+
+PokeAPI: https://pokeapi.co/
