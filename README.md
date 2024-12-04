@@ -25,9 +25,11 @@ Esta aplicación consume datos de desde la PokeAPI  externa utilizando **GraphQL
 - flutter_svg
 - graphview
 - sharedPreferences
+- cross_file
+- flutter_debouncer
 - Google fonts
 - screenshot
-- share plus 
+- share plus
 - pathprovider
 
 ## Configuración e Instalación
