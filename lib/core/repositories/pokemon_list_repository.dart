@@ -97,8 +97,8 @@ class PokemonListRepository {
 
   //String ability list query
   String getPokemonAbilitiesQuery = """
-  query getPokemonAbilities(\$searchTerm: String = "%%", \$limit: Int = 50, \$offset: Int = 10) {
-    pokemon_v2_pokemonability(distinct_on: ability_id, order_by: {ability_id: asc, pokemon_v2_ability: {}}, where: {pokemon_v2_ability: {name: {_like: \$searchTerm}}}, offset: \$offset, limit: \$limit) {
+  query getPokemonAbilities(\$searchTerm: String = "%%", \$limit: Int = 50, \$offset: Int = 0) {
+    pokemon_v2_pokemonability(distinct_on: ability_id, order_by: {ability_id: asc}, where: {pokemon_v2_ability: {name: {_like: \$searchTerm}}, pokemon_v2_pokemon: {is_default: {_eq: true}}}, offset: \$offset, limit: \$limit) {
       pokemon_v2_ability {
         name
       }

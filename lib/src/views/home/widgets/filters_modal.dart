@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_debouncer/flutter_debouncer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';
 import 'package:pokedex_app/core/utils/filter_utils.dart';
@@ -293,6 +294,7 @@ class _AbilityFilterState extends State<AbilityFilter> {
   bool _isFirstLoad = true; 
   final List<String> pokemonAbilitiesList = [];
   final controller = ScrollController();
+  final Debouncer _debouncer = Debouncer();
 
   @override
   void initState() {
@@ -355,10 +357,16 @@ class _AbilityFilterState extends State<AbilityFilter> {
   }
 
   void _onSearchChanged() {
-    setState(() {
-      _searchTerm = _searchController.text;
-    });
-    _refreshList();
+    const duration = Duration(milliseconds: 300);
+    _debouncer.debounce(
+      duration: duration,
+      onDebounce: () {
+        setState(() {
+          _searchTerm = _searchController.text;
+        });
+        _refreshList();
+      },
+    );
   }
 
   @override
