@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pokedex_app/core/entities/pokemon_evolution_entity.dart';
 import 'package:pokedex_app/core/entities/pokemon_stats_entity.dart';
+import 'package:pokedex_app/src/views/Details/widgets/pokemon_card.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_evolution_widget.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_info_tab.dart';
 import 'package:pokedex_app/src/views/Details/widgets/pokemon_moves_tab.dart';
@@ -11,12 +14,16 @@ import '../../../../core/entities/pokemon_list_entity.dart';
 import '../../../../core/entities/pokemon_moves_entity.dart';
 import '../../../../core/repositories/pokemon_details_repository.dart';
 import '../../../../core/utils/type_colors.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 
 class PokemonInfoScreen extends StatefulWidget {
   final PokemonListEntity pokemon;
   final PokemonDetailsRepository repository;
+  final ScreenshotController screenshotController = ScreenshotController();
 
-  const PokemonInfoScreen(
+  PokemonInfoScreen(
       {super.key, required this.pokemon, required this.repository});
 
   @override
@@ -63,7 +70,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
   Future<void> _fetchPokemonInfo() async {
     try {
       final pokemonInfo =
-          await widget.repository.getPokemonInfo(context, widget.pokemon.id);
+      await widget.repository.getPokemonInfo(context, widget.pokemon.id);
       setState(() {
         _pokemonInfo = pokemonInfo;
       });
@@ -75,7 +82,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
   Future<void> _fetchPokemonStats() async {
     try {
       final pokemonStats =
-          await widget.repository.getPokemonStats(context, widget.pokemon.id);
+      await widget.repository.getPokemonStats(context, widget.pokemon.id);
       setState(() {
         _pokemonStats = pokemonStats;
       });
@@ -87,7 +94,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
   Future<void> _fetchPokemonMoves() async {
     try {
       final pokemonMoves =
-          await widget.repository.getPokemonMoves(context, widget.pokemon.id);
+      await widget.repository.getPokemonMoves(context, widget.pokemon.id);
       setState(() {
         _pokemonMoves = pokemonMoves;
       });
@@ -98,8 +105,8 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
 
   Future<void> _fetchPokemonEvolution() async {
     try {
-      final pokemonEvolutionList = await widget.repository.getPokemonEvolution(
-          context, widget.pokemon.id);
+      final pokemonEvolutionList = await widget.repository
+          .getPokemonEvolution(context, widget.pokemon.id);
       setState(() {
         _pokemonEvolutionList = pokemonEvolutionList;
       });
@@ -183,7 +190,8 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                           PokemonMovesTab(
                               pokemonMoves: _pokemonMoves,
                               pokemon: widget.pokemon),
-                          PokemonEvolutionWidget(evolutions: _pokemonEvolutionList),
+                          PokemonEvolutionWidget(
+                              evolutions: _pokemonEvolutionList),
                         ],
                       ),
                     ),
@@ -204,26 +212,53 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                 onPressed: () => Navigator.pop(context)),
           ),
           Positioned(
+            top: 30,
+            right: 5,
+            child: IconButton(
+              icon: const Icon(
+                Icons.share,
+                color: Colors.white,
+                size: 25,
+              ),
+              onPressed: () async {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => Scaffold(body: PokemonCard(pokemon: widget.pokemon, pokemonInfo: _pokemonInfo)),
+                //   ),
+                // );
+                final image = await widget.screenshotController.captureFromWidget(
+                  MediaQuery(data: new MediaQueryData(), child: Scaffold(body: PokemonCard(pokemon: widget.pokemon, pokemonInfo: _pokemonInfo))),
+                );
+                final directory = await getApplicationDocumentsDirectory();
+                final imageFinal = File('${directory.path}/screenshot.png');
+                imageFinal.writeAsBytes(image);
+                final xFile = XFile(imageFinal.path);
+                Share.shareXFiles([xFile], text: 'Mira es ${widget.pokemon.name}');
+              },
+            ),
+          ),
+          Positioned(
             top: (height * 0.07),
             left: (width / 2) - 70,
             child: widget.pokemon.spriteUrl != null
                 ? Hero(
-                    tag: widget.pokemon.id,
-                    child: Image.network(
-                        widget.pokemon.spriteUrl,
-                        height: height * 0.30,
-                        fit: BoxFit.fitHeight,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.error),
-                      ),
-                )
+              tag: widget.pokemon.id,
+              child: Image.network(
+                widget.pokemon.spriteUrl,
+                height: height * 0.30,
+                fit: BoxFit.fitHeight,
+                errorBuilder: (context, error, stackTrace) =>
+                const Icon(Icons.error),
+              ),
+            )
                 : const Icon(Icons.image_not_supported),
           ),
           Positioned(
             top: 80,
             left: 20,
             child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
                 "#${widget.pokemon.id.toString().padLeft(3, '0')}",
                 style: const TextStyle(fontSize: 16, color: Colors.white),
@@ -240,13 +275,13 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
               Row(
                 children: widget.pokemon.type
                     .map((type) => Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 4, 5, 0),
-                          child: SvgPicture.asset(
-                            'assets/icons/$type.svg',
-                            height: 40,
-                            width: 40,
-                          ),
-                        ))
+                  padding: const EdgeInsets.fromLTRB(0, 4, 5, 0),
+                  child: SvgPicture.asset(
+                    'assets/icons/$type.svg',
+                    height: 40,
+                    width: 40,
+                  ),
+                ))
                     .toList(),
               ),
             ]),
