@@ -108,7 +108,7 @@ class EvolutionTile extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PokemonInfoScreen(
+            builder: (_) => PokemonDetailsView(
               pokemon: evolution.pokemonListTile,
               repository: PokemonDetailsRepository(),
             ),
