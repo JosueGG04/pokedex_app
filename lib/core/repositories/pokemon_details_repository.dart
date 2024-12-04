@@ -122,22 +122,30 @@ class PokemonDetailsRepository {
 
   String getPokemonMovesQuery = """
   query getPokemonMoves(\$id: Int!) {
-  pokemon_v2_pokemon(where: {id: {_eq: \$id}}) {
-    name
-    pokemon_v2_pokemonmoves(order_by: {pokemon_v2_versiongroup: {order: desc}, move_id: asc, level: asc}, where: {pokemon_v2_movelearnmethod: {id: {_eq: 1}}}, distinct_on: [move_id, level]) {
-      level
-      pokemon_v2_move {
-        name
-        power
-        accuracy
-        pp
-        pokemon_v2_type {
+    pokemon_v2_pokemon(where: {id: {_eq: \$id}}) {
+      name
+      pokemon_v2_pokemonmoves(distinct_on: move_id) {
+        move_id
+        level
+        pokemon_v2_move {
           name
+          power
+          accuracy
+          pp
+          pokemon_v2_type {
+            name
+          }
+          pokemon_v2_movedamageclass {
+            name
+          }
+        }
+        pokemon_v2_movelearnmethod {
+          name
+          id
         }
       }
     }
   }
-}
   """;
 
   Future<List<PokemonMovesEntity>> getPokemonMoves(
@@ -162,7 +170,10 @@ class PokemonDetailsRepository {
               pp: move['pokemon_v2_move']['pp'],
               power: move['pokemon_v2_move']['power'],
               level: move['level'],
-              type: [move['pokemon_v2_move']['pokemon_v2_type']['name']],
+              type: move['pokemon_v2_move']['pokemon_v2_type']['name'],
+              damageClass: move['pokemon_v2_move']['pokemon_v2_movedamageclass']['name'],
+              learningMethod: move['pokemon_v2_movelearnmethod']['name'],
+              learningMethodId: move['pokemon_v2_movelearnmethod']['id'],
             ))
         .toList();
   }
