@@ -105,3 +105,40 @@ Muestra una lista interactiva y desplazable de Pokémon, incluyendo sus imágene
 - `List.Builder`: Crea una lista desplazable que muestra los Pokémon en un `PokemonListTile`.
 - `PokemonListTile`: widget personalizado que dados los datos básicos de un Pokémon crea un elemento el cual al ser presionado envia a la pagina de informacion del Pokémon. Este elemento tambien posee un boton (con forma de estrella) que permite agregar el Pokémon a la lista de favoritos.
 - `BottomNavigationBar`: widget que permite intercambiar entre widgets en un arreglo de widgets encontrado en el `body` del `Scafold` (en este caso entre la lista principal y la lista de favoritos)
+
+## 2. Información Detallada de un Pokémon
+
+Cuando el usuario selecciona un Pokémon de la lista principal, se despliega una pantalla detallada con información relevante. Esta pantalla muestra desde los datos básicos hasta habilidades y estadísticas visualmente atractivas.
+
+### **Componentes:**
+
+- **`PokemonInfoTab`**: Widget principal que construye la página de detalles del Pokémon seleccionado.
+- **`Container`**: Define el fondo blanco y el estilo general del contenido.
+- **`Column`**: Organiza los elementos en bloques principales:
+  - Descripción del Pokémon.
+  - Altura y peso.
+  - Tipos y habilidades.
+- **`Row`**: Presenta ítems como altura y peso en una disposición horizontal.
+- **`SvgPicture`**: Muestra íconos SVG asociados a los tipos del Pokémon.
+- **`Text`**: Estiliza los textos de cada sección como títulos, descripciones y detalles específicos.
+- **`Stack`** y **`Positioned`**: Para superponer elementos como etiquetas estilizadas ("Species", "Abilities").
+- **`MediaQuery`**: Se utiliza para calcular el ancho disponible de la pantalla, adaptándose a diferentes tamaños de dispositivos.
+- **`PokemonStatsTab`**: Widget personalizado que muestra las estadísticas de combate del Pokémon en un formato visual interactivo:
+  - **`TabBar`** y **`TabBarView`**: Organizan las estadísticas en tres pestañas:
+    - **Base Stats**: Valores base de cada atributo.
+    - **Min Stats**: Valores mínimos posibles para cada atributo.
+    - **Max Stats**: Valores máximos posibles para cada atributo.
+  - **`StatsGraph`**: Componente gráfico que presenta las estadísticas de forma visual mediante barras o gráficos de radar, adaptados al color del tipo principal del Pokémon.
+  - **`TabController`**: Controlador que permite alternar entre las pestañas.
+  - **`Positioned`**: Añade un título estilizado que identifica la sección como "Base Stats".
+- **`PokemonMoves`**: Widget personalizado que muestra los movimientos del Pokémon.
+  - Utiliza un **`Table`** para organizar los movimientos en columnas con información como:
+  - **Nombre del movimiento** (con íconos SVG de tipo).
+  - **Nivel** al que el Pokémon aprende el movimiento.
+  - **Poder** (si aplica).
+  - **Precisión** (si aplica).
+  - **PP** (Puntos de Poder disponibles).
+  - **`SvgPicture`** para íconos visuales de tipos asociados a los movimientos.
+  - Cada fila del **`Table`** muestra un movimiento individual.
+- **`PokemonEvolutions`**: Widget personalizado que muestra el árbol evolutivo del Pokémon.
+
