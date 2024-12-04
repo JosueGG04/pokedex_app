@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_debouncer/flutter_debouncer.dart';
 import 'package:pokedex_app/core/repositories/pokemon_list_repository.dart';  
 import 'package:pokedex_app/core/entities/pokemon_list_entity.dart';
 import 'package:pokedex_app/src/views/home/widgets/filters_modal.dart';
@@ -29,6 +30,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   String _selectedAbility = '';
   String _selectedAttribute = '';
   String _selectedDirection = '';
+  final Debouncer _debouncer = Debouncer();
 
 
 
@@ -101,10 +103,16 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   void _onSearchChanged() {
-    setState(() {
-      _searchTerm = _searchController.text;
-    });
-    _refreshList();
+    const duration = Duration(milliseconds: 300);
+    _debouncer.debounce(
+      duration: duration,
+      onDebounce: () {
+        setState(() {
+          _searchTerm = _searchController.text;
+        });
+        _refreshList();
+      },
+    );
   }
 
   void _onAbilitySelected(String ability) {
