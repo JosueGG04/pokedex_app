@@ -151,7 +151,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.filter_alt),
+              icon: const Icon(Icons.filter_alt),
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
@@ -170,7 +170,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.sort),
+              icon: const Icon(Icons.sort),
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
