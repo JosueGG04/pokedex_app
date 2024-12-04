@@ -253,33 +253,6 @@ class _PokemonDetailsViewState extends State<PokemonDetailsView>
                 onPressed: () => Navigator.pop(context)),
           ),
           Positioned(
-            top: 30,
-            right: 5,
-            child: IconButton(
-              icon: const Icon(
-                Icons.share,
-                color: Colors.white,
-                size: 25,
-              ),
-              onPressed: () async {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (_) => Scaffold(body: PokemonCard(pokemon: widget.pokemon, pokemonInfo: _pokemonInfo)),
-                //   ),
-                // );
-                final image = await widget.screenshotController.captureFromWidget(
-                  MediaQuery(data: new MediaQueryData(), child: Scaffold(body: PokemonCard(pokemon: widget.pokemon, pokemonInfo: _pokemonInfo))),
-                );
-                final directory = await getApplicationDocumentsDirectory();
-                final imageFinal = File('${directory.path}/screenshot.png');
-                imageFinal.writeAsBytes(image);
-                final xFile = XFile(imageFinal.path);
-                Share.shareXFiles([xFile], text: 'Mira es ${widget.pokemon.name}');
-              },
-            ),
-          ),
-          Positioned(
             top: (height * 0.07),
             left: (width / 2) - 70,
             child: widget.pokemon.spriteUrl != null
@@ -294,6 +267,39 @@ class _PokemonDetailsViewState extends State<PokemonDetailsView>
               ),
             )
                 : const Icon(Icons.image_not_supported),
+          ),
+          Positioned(
+            top: 30,
+            right: 5,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.house,
+                    color: Colors.white,
+                    size: 25,
+                  ),
+                  onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.share,
+                    color: Colors.white,
+                    size: 25,
+                  ),
+                  onPressed: () async {
+                    final image = await widget.screenshotController.captureFromWidget(
+                      MediaQuery(data: new MediaQueryData(), child: Scaffold(body: PokemonCard(pokemon: widget.pokemon, pokemonInfo: _pokemonInfo))),
+                    );
+                    final directory = await getApplicationDocumentsDirectory();
+                    final imageFinal = File('${directory.path}/screenshot.png');
+                    imageFinal.writeAsBytes(image);
+                    final xFile = XFile(imageFinal.path);
+                    Share.shareXFiles([xFile], text: 'Mira es ${widget.pokemon.name}');
+                  },
+                ),
+              ],
+            ),
           ),
           Positioned(
             top: 80,
