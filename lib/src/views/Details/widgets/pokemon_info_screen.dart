@@ -234,7 +234,7 @@ class _PokemonInfoScreenState extends State<PokemonInfoScreen>
                 final imageFinal = File('${directory.path}/screenshot.png');
                 imageFinal.writeAsBytes(image);
                 final xFile = XFile(imageFinal.path);
-                Share.shareXFiles([xFile], text: 'Mira esta captura de pantalla');
+                Share.shareXFiles([xFile], text: 'Mira es ${widget.pokemon.name}');
               },
             ),
           ),
