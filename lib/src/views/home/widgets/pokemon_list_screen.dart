@@ -197,7 +197,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                     : const SizedBox.shrink();
               }
               final pokemon = _pokemonList[index];
-              return PokemonListTile(pokemon: pokemon);
+              return PokemonListTile(pokemon: pokemon, index: index, pokemonList: _pokemonList);
             },
           ),
         ),

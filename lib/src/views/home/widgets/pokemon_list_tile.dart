@@ -10,8 +10,11 @@ const double pokemonImgSize = 100, typeIconSize = 22;
 
 class PokemonListTile extends StatefulWidget {
   final PokemonListEntity pokemon;
+  final int index;
+  final List<PokemonListEntity> pokemonList;
+  
 
-  const PokemonListTile({super.key, required this.pokemon});
+  const PokemonListTile({super.key, required this.pokemon, required this.index, required this.pokemonList});
 
   @override
   _PokemonListTileState createState() => _PokemonListTileState();
@@ -34,7 +37,7 @@ class _PokemonListTileState extends State<PokemonListTile> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PokemonInfoScreen(pokemon: widget.pokemon, repository: PokemonDetailsRepository()),
+            builder: (_) => PokemonInfoScreen(pokemonList: widget.pokemonList, repository: PokemonDetailsRepository(), initialIndex: widget.index),
           ),
         );
       },
