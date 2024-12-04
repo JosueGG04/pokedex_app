@@ -7,68 +7,30 @@ import '../../../../core/entities/pokemon_list_entity.dart';
 import '../../../../core/repositories/pokemon_details_repository.dart';
 import '../../../../core/utils/type_colors.dart';
 
-
 class PokemonCard extends StatefulWidget {
   final PokemonListEntity pokemon;
-  final PokemonDetailsRepository repository;
-  final ScreenshotController screenshotController;
+  final PokemonInfoEntity pokemonInfo;
 
   const PokemonCard(
-      {super.key, required this.pokemon, required this.repository, required this.screenshotController});
+      {super.key, required this.pokemon, required this.pokemonInfo});
 
   @override
   State<PokemonCard> createState() => _PokemonCardState();
 }
 
 class _PokemonCardState extends State<PokemonCard> {
-  late PokemonInfoEntity _pokemonInfo;
-
-  @override
-  void initState() {
-    super.initState();
-    _pokemonInfo = PokemonInfoEntity(
-        id: widget.pokemon.pokedexNumber,
-        genus: '',
-        description: '',
-        height: 0,
-        weight: 0,
-        name: '',
-        abilities: []);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-
-  Future<void> _fetchPokemonInfo() async {
-    try {
-      final pokemonInfo =
-      await widget.repository.getPokemonInfo(context, widget.pokemon.id);
-      setState(() {
-        _pokemonInfo = pokemonInfo;
-      });
-    } catch (e) {
-      print('Error al cargar información del Pokémon: $e');
-    }
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _fetchPokemonInfo();
   }
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
-    return Screenshot(
-        controller: widget.screenshotController,
-        child: Scaffold(
-      backgroundColor: lightTypeColors[widget.pokemon.type[0]],
-      body: Stack(
+    var height = 500.0;
+    var width = 400.0;
+    return Container(
+      color: lightTypeColors[widget.pokemon.type[0]],
+      child: Stack(
         alignment: Alignment.center,
         children: [
           Positioned(
@@ -84,7 +46,7 @@ class _PokemonCardState extends State<PokemonCard> {
             ),
           ),
           Positioned(
-            bottom: 0,
+            top: height * 0.50,
             child: Container(
               width: width,
               height: height * 0.65,
@@ -93,7 +55,7 @@ class _PokemonCardState extends State<PokemonCard> {
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
-                color: Colors.white,
+                color: Colors.transparent,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,8 +65,8 @@ class _PokemonCardState extends State<PokemonCard> {
                       children: [
                         Container(
                           padding: const EdgeInsets.all(16.0),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
+                          decoration: BoxDecoration(
+                            color: lightTypeColors[widget.pokemon.type[0]],
                           ),
                           child: Container(
                             padding: const EdgeInsets.all(16.0),
@@ -117,13 +79,14 @@ class _PokemonCardState extends State<PokemonCard> {
                               children: [
                                 const SizedBox(height: 30),
                                 Text(
-                                  _pokemonInfo.genus,
+                                  widget.pokemonInfo.genus,
                                   style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w500),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  _pokemonInfo.description,
+                                  widget.pokemonInfo.description,
                                   style: TextStyle(
                                       fontSize: 14, color: Colors.grey[700]),
                                   textAlign: TextAlign.center,
@@ -133,8 +96,8 @@ class _PokemonCardState extends State<PokemonCard> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: widget.pokemon.type
                                       .map((type) => Padding(
-                                    padding:
-                                    const EdgeInsets.fromLTRB(0, 4, 5, 0),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        0, 4, 5, 0),
                                     child: Row(
                                       children: [
                                         SvgPicture.asset(
@@ -166,7 +129,7 @@ class _PokemonCardState extends State<PokemonCard> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                         Text(
-                                            "${(_pokemonInfo.height / 10).toStringAsFixed(1)} m"),
+                                            "${(widget.pokemonInfo.height / 10).toStringAsFixed(1)} m"),
                                       ],
                                     ),
                                     const SizedBox(width: 16),
@@ -178,7 +141,7 @@ class _PokemonCardState extends State<PokemonCard> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                         Text(
-                                            "${(_pokemonInfo.weight / 10).toStringAsFixed(1)} kg"),
+                                            "${(widget.pokemonInfo.weight / 10).toStringAsFixed(1)} kg"),
                                       ],
                                     ),
                                   ],
@@ -202,7 +165,7 @@ class _PokemonCardState extends State<PokemonCard> {
               tag: widget.pokemon.id,
               child: Image.network(
                 widget.pokemon.spriteUrl,
-                height: height * 0.30,
+                height: height * 0.40,
                 fit: BoxFit.fitHeight,
                 errorBuilder: (context, error, stackTrace) =>
                 const Icon(Icons.error),
@@ -244,13 +207,6 @@ class _PokemonCardState extends State<PokemonCard> {
           ),
         ],
       ),
-    ));
+    );
   }
-}
-
-Future<String> captureAndSaveScreenshot(ScreenshotController screenshotController) async {
-  final directory = await getApplicationDocumentsDirectory();
-  final imagePath = '${directory.path}/screenshot.png';
-  await screenshotController.captureAndSave(directory.path, fileName: 'screenshot.png');
-  return imagePath;
 }
